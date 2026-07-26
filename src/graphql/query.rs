@@ -8,7 +8,6 @@ use crate::graphql::types::AnimeTitle;
 
 pub struct Query;
 
-
 impl From<anime::Model> for Anime {
     fn from(model: anime::Model) -> Self {
         let title = AnimeTitle::from(&model);
@@ -17,6 +16,7 @@ impl From<anime::Model> for Anime {
             format: model.format.into(),
             season: model.season.into(),
             slug: model.slug,
+            synopsis: model.synopsis,
             title,
             year: model.year,
         }

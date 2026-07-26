@@ -1,6 +1,10 @@
 use async_graphql::{Enum, SimpleObject};
 
-use crate::entities::anime;
+use crate::entities::anime::{
+    self,
+    AnimeFormat as AnimeFormatEnum,
+    AnimeSeason as AnimeSeasonEnum
+};
 
 #[derive(Enum, Copy, Clone, Eq, PartialEq)]
 pub enum AnimeFormat {
@@ -12,6 +16,19 @@ pub enum AnimeFormat {
     ONA,
 }
 
+impl From<AnimeFormatEnum> for AnimeFormat {
+    fn from(value: AnimeFormatEnum) -> Self {
+        match value {
+            AnimeFormatEnum::TV => AnimeFormat::TV,
+            AnimeFormatEnum::TVShort => AnimeFormat::TVShort,
+            AnimeFormatEnum::OVA => AnimeFormat::OVA,
+            AnimeFormatEnum::Movie => AnimeFormat::Movie,
+            AnimeFormatEnum::Special => AnimeFormat::Special,
+            AnimeFormatEnum::ONA => AnimeFormat::ONA,
+        }
+    }
+}
+
 #[derive(Enum, Copy, Clone, Eq, PartialEq)]
 pub enum AnimeSeason {
     Winter,
@@ -20,28 +37,13 @@ pub enum AnimeSeason {
     Fall,
 }
 
-impl From<i32> for AnimeFormat {
-    fn from(value: i32) -> Self {
+impl From<AnimeSeasonEnum> for AnimeSeason {
+    fn from(value: AnimeSeasonEnum) -> Self {
         match value {
-            0 => Self::TV,
-            1 => Self::TVShort,
-            2 => Self::OVA,
-            3 => Self::Movie,
-            4 => Self::Special,
-            5 => Self::ONA,
-            _ => panic!("Invalid AnimeFormat: {}", value),
-        }
-    }
-}
-
-impl From<i32> for AnimeSeason {
-    fn from(value: i32) -> Self {
-        match value {
-            0 => Self::Winter,
-            1 => Self::Spring,
-            2 => Self::Summer,
-            3 => Self::Fall,
-            _ => panic!("Invalid AnimeSeason: {}", value),
+            AnimeSeasonEnum::Winter => AnimeSeason::Winter,
+            AnimeSeasonEnum::Spring => AnimeSeason::Spring,
+            AnimeSeasonEnum::Summer => AnimeSeason::Summer,
+            AnimeSeasonEnum::Fall => AnimeSeason::Fall,
         }
     }
 }
@@ -69,6 +71,7 @@ pub struct Anime {
     pub format: AnimeFormat,
     pub season: AnimeSeason,
     pub slug: String,
+    pub synopsis: Option<String>,
     pub title: AnimeTitle,
     pub year: i32,
 }
