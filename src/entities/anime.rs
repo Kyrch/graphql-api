@@ -1,7 +1,4 @@
-use sea_orm::{
-    entity::prelude::*,
-    EntityTrait,
-};
+use sea_orm::{EntityTrait, entity::prelude::*};
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "anime")]

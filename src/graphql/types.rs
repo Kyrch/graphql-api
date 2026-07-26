@@ -1,9 +1,7 @@
 use async_graphql::{Enum, SimpleObject};
 
 use crate::entities::anime::{
-    self,
-    AnimeFormat as AnimeFormatEnum,
-    AnimeSeason as AnimeSeasonEnum
+    self, AnimeFormat as AnimeFormatEnum, AnimeSeason as AnimeSeasonEnum,
 };
 
 #[derive(Enum, Copy, Clone, Eq, PartialEq)]
