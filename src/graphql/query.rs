@@ -2,26 +2,9 @@ use async_graphql::{Context, Object, Result};
 
 use sea_orm::{DatabaseConnection, EntityTrait};
 
-use crate::entities::anime;
-use crate::graphql::types::Anime;
-use crate::graphql::types::AnimeTitle;
+use crate::{entities::anime, graphql::types::anime::Anime};
 
 pub struct Query;
-
-impl From<anime::Model> for Anime {
-    fn from(model: anime::Model) -> Self {
-        let title = AnimeTitle::from(&model);
-        Self {
-            id: model.id,
-            format: model.format.into(),
-            season: model.season.into(),
-            slug: model.slug,
-            synopsis: model.synopsis,
-            title,
-            year: model.year,
-        }
-    }
-}
 
 #[Object]
 impl Query {

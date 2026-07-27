@@ -1,4 +1,6 @@
-use sea_orm::{EntityTrait, entity::prelude::*};
+use sea_orm::entity::prelude::*;
+
+use crate::entities::synonym;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "anime")]
@@ -16,7 +18,19 @@ pub struct Model {
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
+pub enum Relation {
+    #[sea_orm(
+        has_many = "synonym::Entity",
+        on_condition = r#"synonym::Column::SynonymableType.eq("anime")"#
+    )]
+    Synonyms,
+}
+
+impl Related<synonym::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Synonyms.def()
+    }
+}
 
 impl ActiveModelBehavior for ActiveModel {}
 

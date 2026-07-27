@@ -1,7 +1,9 @@
-use async_graphql::{Enum, SimpleObject};
+use async_graphql::{ComplexObject, Context, Enum, Result, SimpleObject, dataloader::DataLoader};
 
-use crate::entities::anime::{
-    self, AnimeFormat as AnimeFormatEnum, AnimeSeason as AnimeSeasonEnum,
+use crate::{
+    entities::anime::{self, AnimeFormat as AnimeFormatEnum, AnimeSeason as AnimeSeasonEnum},
+    graphql::types::synonym::Synonym,
+    loaders::anime_synonyms::AnimeSynonymsLoader,
 };
 
 #[derive(Enum, Copy, Clone, Eq, PartialEq)]
@@ -64,6 +66,7 @@ impl From<&anime::Model> for AnimeTitle {
 }
 
 #[derive(SimpleObject)]
+#[graphql(complex)]
 pub struct Anime {
     pub id: u64,
     pub format: AnimeFormat,
@@ -72,4 +75,30 @@ pub struct Anime {
     pub synopsis: Option<String>,
     pub title: AnimeTitle,
     pub year: i32,
+}
+
+#[ComplexObject]
+impl Anime {
+    async fn synonyms(&self, ctx: &Context<'_>) -> Result<Vec<Synonym>> {
+        let loader = ctx.data::<DataLoader<AnimeSynonymsLoader>>()?;
+
+        let models = loader.load_one(self.id).await?.unwrap_or_default();
+
+        Ok(models.into_iter().map(Synonym::from).collect())
+    }
+}
+
+impl From<anime::Model> for Anime {
+    fn from(model: anime::Model) -> Self {
+        let title = AnimeTitle::from(&model);
+        Self {
+            id: model.id,
+            format: model.format.into(),
+            season: model.season.into(),
+            slug: model.slug,
+            synopsis: model.synopsis,
+            title,
+            year: model.year,
+        }
+    }
 }
