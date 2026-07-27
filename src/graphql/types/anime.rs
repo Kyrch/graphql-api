@@ -2,8 +2,8 @@ use async_graphql::{ComplexObject, Context, Enum, Result, SimpleObject, dataload
 
 use crate::{
     entities::anime::{self, AnimeFormat as AnimeFormatEnum, AnimeSeason as AnimeSeasonEnum},
-    graphql::types::synonym::Synonym,
-    loaders::anime_synonyms::AnimeSynonymsLoader,
+    graphql::types::{animetheme::animetheme::AnimeTheme, synonym::Synonym},
+    loaders::{anime_synonyms::AnimeSynonymsLoader, anime_themes::AnimeThemesLoader},
 };
 
 #[derive(Enum, Copy, Clone, Eq, PartialEq)]
@@ -85,6 +85,14 @@ impl Anime {
         let models = loader.load_one(self.id).await?.unwrap_or_default();
 
         Ok(models.into_iter().map(Synonym::from).collect())
+    }
+
+    async fn animethemes(&self, ctx: &Context<'_>) -> Result<Vec<AnimeTheme>> {
+        let loader = ctx.data::<DataLoader<AnimeThemesLoader>>()?;
+
+        let models = loader.load_one(self.id).await?.unwrap_or_default();
+
+        Ok(models.into_iter().map(AnimeTheme::from).collect())
     }
 }
 

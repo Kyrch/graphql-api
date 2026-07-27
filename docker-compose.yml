@@ -1,0 +1,25 @@
+services:
+    api:
+        build:
+            context: .
+        container_name: animethemes-graphql-rust
+        ports:
+            - "8000:8000"
+        env_file:
+            - .env
+        depends_on:
+            - mysql
+
+    mysql:
+        image: mysql:8.4
+        container_name: animethemes-graphql-mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: password
+            MYSQL_DATABASE: animethemes
+        ports:
+            - "3306:3306"
+        volumes:
+            - mysql_data:/var/lib/mysql
+
+volumes:
+    mysql_data:
