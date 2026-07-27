@@ -8,7 +8,10 @@ use sea_orm::DatabaseConnection;
 
 use crate::{
     graphql::query::Query,
-    loaders::{anime_synonyms::AnimeSynonymsLoader, anime_themes::AnimeThemesLoader},
+    loaders::{
+        anime_synonyms::AnimeSynonymsLoader, anime_theme_entries::AnimeThemeEntriesLoader,
+        anime_themes::AnimeThemesLoader,
+    },
 };
 
 pub type AppSchema = Schema<Query, EmptyMutation, EmptySubscription>;
@@ -19,10 +22,14 @@ pub fn create_schema(db: DatabaseConnection) -> AppSchema {
 
     let anime_themes_loader = DataLoader::new(AnimeThemesLoader { db: db.clone() }, tokio::spawn);
 
+    let anime_theme_entries_loader =
+        DataLoader::new(AnimeThemeEntriesLoader { db: db.clone() }, tokio::spawn);
+
     Schema::build(Query, EmptyMutation, EmptySubscription)
         .data(db)
         .data(anime_synonyms_loader)
         .data(anime_themes_loader)
+        .data(anime_theme_entries_loader)
         .finish()
 }
 

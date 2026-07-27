@@ -19,8 +19,6 @@ impl Loader<u64> for AnimeThemesLoader {
             .all(&self.db)
             .await?;
 
-        println!("Found themes: {}", themes.len());
-
         let mut result: HashMap<u64, Vec<animetheme::Model>> = HashMap::new();
 
         for theme in themes {

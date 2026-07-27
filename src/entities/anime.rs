@@ -25,7 +25,7 @@ pub enum Relation {
     )]
     Synonyms,
     #[sea_orm(has_many = "animetheme::Entity")]
-    Themes,
+    AnimeThemes,
 }
 
 impl Related<synonym::Entity> for Entity {
@@ -36,7 +36,7 @@ impl Related<synonym::Entity> for Entity {
 
 impl Related<animetheme::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Themes.def()
+        Relation::AnimeThemes.def()
     }
 }
 
