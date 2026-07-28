@@ -3,7 +3,7 @@ use async_graphql::{ComplexObject, Context, Enum, Result, SimpleObject, dataload
 use crate::{
     entities::animetheme::animetheme::{self, ThemeType as ThemeTypeEnum},
     graphql::types::animetheme::animethemeentry::animethemeentry::AnimeThemeEntry,
-    loaders::anime_theme_entries::AnimeThemeEntriesLoader,
+    loaders::anime::anime_theme_entries::AnimeThemeEntriesLoader,
 };
 
 #[derive(SimpleObject)]

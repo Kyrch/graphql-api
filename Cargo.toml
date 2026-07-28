@@ -4,10 +4,11 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-async-graphql = { version = "7.2.1", features = ["dataloader", "graphiql"] }
+async-graphql = { version = "7.2.1", features = ["chrono", "dataloader", "graphiql"] }
 async-graphql-axum = "7.2.1"
 
 axum = "0.8"
+chrono = "0.4.45"
 dotenvy = "0.15"
 sea-orm = { version = "2.0.0", features = ["sqlx-mysql", "runtime-tokio-rustls"] }
 tokio = { version = "1", features = ["full"] }

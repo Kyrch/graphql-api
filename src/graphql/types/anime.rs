@@ -1,9 +1,16 @@
-use async_graphql::{ComplexObject, Context, Enum, Result, SimpleObject, dataloader::DataLoader};
+use async_graphql::{
+    ComplexObject, Context, Enum, OutputType, Result, SimpleObject,
+    connection::{Connection, DefaultConnectionName, Edge, EdgeNameType, EmptyFields},
+    dataloader::DataLoader,
+};
 
 use crate::{
     entities::anime::{self, AnimeFormat as AnimeFormatEnum, AnimeSeason as AnimeSeasonEnum},
-    graphql::types::{animetheme::animetheme::AnimeTheme, synonym::Synonym},
-    loaders::{anime_synonyms::AnimeSynonymsLoader, anime_themes::AnimeThemesLoader},
+    graphql::types::{animetheme::animetheme::AnimeTheme, series::Series, synonym::Synonym},
+    loaders::anime::{
+        anime_series::AnimeSeriesLoader, anime_synonyms::AnimeSynonymsLoader,
+        anime_themes::AnimeThemesLoader,
+    },
 };
 
 #[derive(Enum, Copy, Clone, Eq, PartialEq)]
@@ -77,6 +84,20 @@ pub struct Anime {
     pub year: i32,
 }
 
+#[derive(SimpleObject)]
+pub struct SeriesEdgeFields {
+    pub created_at: Option<String>,
+    pub updated_at: Option<String>,
+}
+
+pub struct AnimeSeriesEdge;
+
+impl EdgeNameType for AnimeSeriesEdge {
+    fn type_name<T: OutputType>() -> String {
+        "AnimeSeriesEdge".to_string()
+    }
+}
+
 #[ComplexObject]
 impl Anime {
     async fn synonyms(&self, ctx: &Context<'_>) -> Result<Vec<Synonym>> {
@@ -93,6 +114,39 @@ impl Anime {
         let models = loader.load_one(self.id).await?.unwrap_or_default();
 
         Ok(models.into_iter().map(AnimeTheme::from).collect())
+    }
+
+    async fn series(
+        &self,
+        ctx: &Context<'_>,
+    ) -> Result<
+        Connection<
+            u64,
+            Series,
+            EmptyFields,
+            SeriesEdgeFields,
+            DefaultConnectionName,
+            AnimeSeriesEdge,
+        >,
+    > {
+        let loader = ctx.data::<DataLoader<AnimeSeriesLoader>>()?;
+
+        let rows = loader.load_one(self.id).await?.unwrap_or_default();
+
+        let mut connection = Connection::with_additional_fields(false, false, EmptyFields);
+
+        for (pivot, series) in rows {
+            connection.edges.push(Edge::with_additional_fields(
+                series.id,
+                series.into(),
+                SeriesEdgeFields {
+                    created_at: pivot.created_at.map(|dt| dt.to_rfc3339()),
+                    updated_at: pivot.updated_at.map(|dt| dt.to_rfc3339()),
+                },
+            ));
+        }
+
+        Ok(connection)
     }
 }
 
