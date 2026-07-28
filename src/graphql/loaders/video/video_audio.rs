@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use async_graphql::dataloader::Loader;
 use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 
-use crate::entities::audio;
+use crate::entities::content::audio;
 
 pub struct VideoAudioLoader {
     pub db: DatabaseConnection,

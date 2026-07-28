@@ -1,6 +1,6 @@
 use async_graphql::SimpleObject;
 
-use crate::entities::themegroup;
+use crate::entities::content::themegroup;
 
 /// Represents the group that accompanies a Theme.
 ///For example, English Version is the group for english dubbed Theme.For example, Staple Stable is the song for the Bakemonogatari OP1 AnimeTheme.

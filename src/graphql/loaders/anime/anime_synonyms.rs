@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use async_graphql::dataloader::Loader;
 use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 
-use crate::entities::synonym;
+use crate::entities::content::synonym;
 
 pub struct AnimeSynonymsLoader {
     pub db: DatabaseConnection,

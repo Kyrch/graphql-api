@@ -2,7 +2,7 @@ use async_graphql::dataloader::Loader;
 use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 use std::collections::HashMap;
 
-use crate::entities::{anime_series, series};
+use crate::entities::content::{anime_series, series};
 
 pub struct AnimeSeriesLoader {
     pub db: DatabaseConnection,

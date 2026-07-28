@@ -1,6 +1,6 @@
 use async_graphql::SimpleObject;
 
-use crate::entities::animetheme::animethemeentry::animethemeentry;
+use crate::entities::content::animetheme::animethemeentry::animethemeentry;
 
 /// Represents a version of an anime theme.
 ///

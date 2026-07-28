@@ -1,14 +1,14 @@
 use sea_orm::entity::prelude::*;
 
-use crate::entities::animetheme::animetheme;
+use crate::entities::content::animetheme::animetheme;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
-#[sea_orm(table_name = "groups")]
+#[sea_orm(table_name = "songs")]
 pub struct Model {
-    #[sea_orm(primary_key, column_name = "group_id")]
+    #[sea_orm(primary_key, column_name = "song_id")]
     pub id: u64,
-    pub name: String,
-    pub slug: String,
+    pub title: Option<String>,
+    pub title_native: Option<String>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

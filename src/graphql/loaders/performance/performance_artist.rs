@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use async_graphql::dataloader::Loader;
 use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 
-use crate::entities::artist;
+use crate::entities::content::artist;
 
 pub struct PerformanceArtistLoader {
     pub db: DatabaseConnection,

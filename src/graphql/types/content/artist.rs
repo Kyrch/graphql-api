@@ -1,6 +1,6 @@
 use async_graphql::SimpleObject;
 
-use crate::entities::artist;
+use crate::entities::content::artist;
 
 #[derive(SimpleObject)]
 pub struct ArtistName {

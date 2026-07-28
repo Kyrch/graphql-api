@@ -1,10 +1,12 @@
 use async_graphql::{ComplexObject, Context, Enum, Result, SimpleObject, dataloader::DataLoader};
 
 use crate::{
-    entities::video::{self, VideoOverlap as VideoOverlapEnum, VideoSource as VideoSourceEnum},
+    entities::content::video::{
+        self, VideoOverlap as VideoOverlapEnum, VideoSource as VideoSourceEnum,
+    },
     graphql::{
         loaders::video::{video_audio::VideoAudioLoader, video_script::VideoScriptLoader},
-        types::{audio::Audio, videoscript::VideoScript},
+        types::content::{audio::Audio, videoscript::VideoScript},
     },
 };
 

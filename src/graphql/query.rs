@@ -2,7 +2,7 @@ use async_graphql::{Context, Object, Result};
 
 use sea_orm::{DatabaseConnection, EntityTrait};
 
-use crate::{entities::anime, graphql::types::anime::Anime};
+use crate::{entities::content::anime, graphql::types::content::anime::Anime};
 
 pub struct Query;
 

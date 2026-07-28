@@ -1,6 +1,6 @@
 use async_graphql::SimpleObject;
 
-use crate::entities::synonym;
+use crate::entities::content::synonym;
 
 /// Represents an alternate title or common abbreviation for an entity.
 ///

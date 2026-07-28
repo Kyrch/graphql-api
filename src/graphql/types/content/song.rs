@@ -1,9 +1,10 @@
 use async_graphql::{ComplexObject, Context, Result, SimpleObject, dataloader::DataLoader};
 
 use crate::{
-    entities::song,
+    entities::content::song,
     graphql::{
-        loaders::song::song_performances::SongPerformancesLoader, types::performance::Performance,
+        loaders::song::song_performances::SongPerformancesLoader,
+        types::content::performance::Performance,
     },
 };
 

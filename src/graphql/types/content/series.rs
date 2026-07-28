@@ -1,6 +1,6 @@
 use async_graphql::SimpleObject;
 
-use crate::entities::series;
+use crate::entities::content::series;
 
 /// Represents a collection of related anime.
 ///

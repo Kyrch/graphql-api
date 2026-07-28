@@ -1,6 +1,6 @@
 use sea_orm::entity::prelude::*;
 
-use crate::entities::{anime_series, animetheme::animetheme, series, synonym};
+use crate::entities::content::{anime_series, animetheme::animetheme, series, synonym};
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "anime")]

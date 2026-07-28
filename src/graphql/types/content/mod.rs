@@ -1,0 +1,12 @@
+pub mod anime;
+pub mod anime_series;
+pub mod animetheme;
+pub mod artist;
+pub mod audio;
+pub mod performance;
+pub mod series;
+pub mod song;
+pub mod synonym;
+pub mod themegroup;
+pub mod video;
+pub mod videoscript;

@@ -1,6 +1,6 @@
 use async_graphql::SimpleObject;
 
-use crate::entities::{audio, series};
+use crate::entities::content::audio;
 
 /// Represents the audio track of a video.
 ///

@@ -1,6 +1,6 @@
 use async_graphql::SimpleObject;
 
-use crate::entities::videoscript;
+use crate::entities::content::videoscript;
 
 /// Represents an encoding script used to produce a video.
 ///
