@@ -11,6 +11,7 @@ use crate::{
     loaders::anime::{
         anime_series::AnimeSeriesLoader, anime_synonyms::AnimeSynonymsLoader,
         anime_theme_entries::AnimeThemeEntriesLoader, anime_themes::AnimeThemesLoader,
+        animetheme::animetheme_song::AnimeThemeSongLoader,
     },
 };
 
@@ -22,6 +23,9 @@ pub fn create_schema(db: DatabaseConnection) -> AppSchema {
 
     let anime_themes_loader = DataLoader::new(AnimeThemesLoader { db: db.clone() }, tokio::spawn);
 
+    let animetheme_song_loader =
+        DataLoader::new(AnimeThemeSongLoader { db: db.clone() }, tokio::spawn);
+
     let anime_theme_entries_loader =
         DataLoader::new(AnimeThemeEntriesLoader { db: db.clone() }, tokio::spawn);
 
@@ -31,6 +35,7 @@ pub fn create_schema(db: DatabaseConnection) -> AppSchema {
         .data(db)
         .data(anime_synonyms_loader)
         .data(anime_themes_loader)
+        .data(animetheme_song_loader)
         .data(anime_theme_entries_loader)
         .data(anime_series_loader)
         .finish()
