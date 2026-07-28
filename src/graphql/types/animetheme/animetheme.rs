@@ -4,7 +4,7 @@ use crate::{
     entities::animetheme::animetheme::{self, ThemeType as ThemeTypeEnum},
     graphql::types::{
         animetheme::animethemeentry::animethemeentry::AnimeThemeEntry, song::Song,
-        theme_group::ThemeGroup,
+        themegroup::ThemeGroup,
     },
     loaders::anime::{
         anime_theme_entries::AnimeThemeEntriesLoader,
