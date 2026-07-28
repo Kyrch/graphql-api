@@ -60,8 +60,6 @@ pub struct Video {
     pub id: u64,
     #[graphql(skip)]
     pub audio_id: Option<u64>,
-    #[graphql(skip)]
-    pub script_id: Option<u64>,
     /// The basename of the file in storage
     pub basename: String,
     /// The filename of the file in storage
@@ -101,13 +99,11 @@ impl Video {
     }
 
     async fn script(&self, ctx: &Context<'_>) -> Result<Option<VideoScript>> {
-        let Some(script_id) = self.script_id else {
-            return Ok(None);
-        };
-
         let loader = ctx.data::<DataLoader<VideoScriptLoader>>()?;
 
-        Ok(loader.load_one(script_id).await?.map(Into::into))
+        let script = loader.load_one(self.id).await?;
+
+        Ok(script.map(Into::into))
     }
 }
 
@@ -116,7 +112,6 @@ impl From<video::Model> for Video {
         Self {
             id: model.id,
             audio_id: model.audio_id,
-            script_id: model.script_id,
             basename: model.basename,
             filename: model.filename,
             lyrics: model.lyrics,

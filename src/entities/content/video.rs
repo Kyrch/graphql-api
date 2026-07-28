@@ -1,6 +1,8 @@
 use sea_orm::entity::prelude::*;
 
-use crate::entities::content::{audio, videoscript};
+use crate::entities::content::{
+    animetheme::animethemeentry::animethemeentry, animethemeentry_videos, audio, videoscript,
+};
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "videos")]
@@ -8,7 +10,6 @@ pub struct Model {
     #[sea_orm(primary_key, column_name = "video_id")]
     pub id: u64,
     pub audio_id: Option<u64>,
-    pub script_id: Option<u64>,
     pub basename: String,
     pub filename: String,
     pub lyrics: bool,
@@ -34,10 +35,13 @@ pub enum Relation {
 
     #[sea_orm(
         belongs_to = "videoscript::Entity",
-        from = "Column::ScriptId",
-        to = "videoscript::Column::Id"
+        from = "Column::Id",
+        to = "videoscript::Column::VideoId"
     )]
     VideoScript,
+
+    #[sea_orm(has_many = "animethemeentry_videos::Entity")]
+    AnimeThemeEntryVideos,
 }
 
 impl Related<audio::Entity> for Entity {
@@ -49,6 +53,16 @@ impl Related<audio::Entity> for Entity {
 impl Related<videoscript::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::VideoScript.def()
+    }
+}
+
+impl Related<animethemeentry::Entity> for Entity {
+    fn to() -> RelationDef {
+        animethemeentry_videos::Relation::AnimeThemeEntry.def()
+    }
+
+    fn via() -> Option<RelationDef> {
+        Some(animethemeentry_videos::Relation::Video.def().rev())
     }
 }
 

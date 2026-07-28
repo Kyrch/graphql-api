@@ -1,12 +1,31 @@
-use async_graphql::SimpleObject;
+use async_graphql::{
+    ComplexObject, Context, Result, SimpleObject,
+    connection::{Connection, Edge, EmptyFields},
+    dataloader::DataLoader,
+};
 
-use crate::entities::content::animetheme::animethemeentry::animethemeentry;
+use crate::{
+    entities::content::animetheme::animethemeentry::animethemeentry,
+    graphql::{
+        loaders::anime::animetheme::animethemeentry::animethemeentry_videos::AnimeThemeEntryVideosLoader,
+        types::content::{
+            animetheme::animethemeentry::animethemeentry_video::{
+                AnimeThemeEntryVideoConnection, AnimeThemeEntryVideoEdge,
+                AnimeThemeEntryVideoEdgeFields,
+            },
+            video::Video,
+        },
+    },
+};
 
 /// Represents a version of an anime theme.
 ///
 /// For example, the ED theme of the Bakemonogatari anime has three anime theme entries to represent three versions.
 #[derive(SimpleObject)]
+#[graphql(complex)]
 pub struct AnimeThemeEntry {
+    #[graphql(skip)]
+    pub id: u64,
     /// The episodes that the theme is used for
     pub episodes: Option<String>,
     /// The number of likes recorded for the resource
@@ -23,9 +42,46 @@ pub struct AnimeThemeEntry {
     pub version: i32,
 }
 
+#[ComplexObject]
+impl AnimeThemeEntry {
+    async fn videos(
+        &self,
+        ctx: &Context<'_>,
+    ) -> Result<
+        Connection<
+            u64,
+            Video,
+            EmptyFields,
+            AnimeThemeEntryVideoEdgeFields,
+            AnimeThemeEntryVideoConnection,
+            AnimeThemeEntryVideoEdge,
+        >,
+    > {
+        let loader = ctx.data::<DataLoader<AnimeThemeEntryVideosLoader>>()?;
+
+        let rows = loader.load_one(self.id).await?.unwrap_or_default();
+
+        let mut connection = Connection::with_additional_fields(false, false, EmptyFields);
+
+        for (pivot, video) in rows {
+            connection.edges.push(Edge::with_additional_fields(
+                video.id,
+                video.into(),
+                AnimeThemeEntryVideoEdgeFields {
+                    created_at: pivot.created_at,
+                    updated_at: pivot.updated_at,
+                },
+            ));
+        }
+
+        Ok(connection)
+    }
+}
+
 impl From<animethemeentry::Model> for AnimeThemeEntry {
     fn from(model: animethemeentry::Model) -> Self {
         Self {
+            id: model.id,
             episodes: model.episodes,
             likes_count: model.likes_count,
             notes: model.notes,

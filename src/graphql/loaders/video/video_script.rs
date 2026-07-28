@@ -15,7 +15,7 @@ impl Loader<u64> for VideoScriptLoader {
 
     async fn load(&self, keys: &[u64]) -> Result<HashMap<u64, Self::Value>, Self::Error> {
         let scripts = videoscript::Entity::find()
-            .filter(videoscript::Column::Id.is_in(keys.iter().copied()))
+            .filter(videoscript::Column::VideoId.is_in(keys.iter().copied()))
             .all(&self.db)
             .await?;
 
