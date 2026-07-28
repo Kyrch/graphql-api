@@ -6,15 +6,15 @@ use async_graphql::{
 
 use crate::{
     entities::anime::{self, AnimeFormat as AnimeFormatEnum, AnimeSeason as AnimeSeasonEnum},
+    graphql::loaders::anime::{
+        anime_series::AnimeSeriesLoader, anime_synonyms::AnimeSynonymsLoader,
+        anime_themes::AnimeThemesLoader,
+    },
     graphql::types::{
         anime_series::{AnimeSeriesConnection, AnimeSeriesEdge, AnimeSeriesEdgeFields},
         animetheme::animetheme::AnimeTheme,
         series::Series,
         synonym::Synonym,
-    },
-    loaders::anime::{
-        anime_series::AnimeSeriesLoader, anime_synonyms::AnimeSynonymsLoader,
-        anime_themes::AnimeThemesLoader,
     },
 };
 

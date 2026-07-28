@@ -2,15 +2,15 @@ use async_graphql::{ComplexObject, Context, Enum, Result, SimpleObject, dataload
 
 use crate::{
     entities::animetheme::animetheme::{self, ThemeType as ThemeTypeEnum},
-    graphql::types::{
-        animetheme::animethemeentry::animethemeentry::AnimeThemeEntry, song::Song,
-        themegroup::ThemeGroup,
-    },
-    loaders::anime::{
+    graphql::loaders::anime::{
         anime_theme_entries::AnimeThemeEntriesLoader,
         animetheme::{
             animetheme_group::AnimeThemeGroupLoader, animetheme_song::AnimeThemeSongLoader,
         },
+    },
+    graphql::types::{
+        animetheme::animethemeentry::animethemeentry::AnimeThemeEntry, song::Song,
+        themegroup::ThemeGroup,
     },
 };
 

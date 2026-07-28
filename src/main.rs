@@ -1,7 +1,6 @@
 mod db;
 mod entities;
 mod graphql;
-mod loaders;
 mod schema;
 
 use axum::{Router, routing::get};

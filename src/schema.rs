@@ -7,8 +7,7 @@ use axum::{extract::State, response::Html};
 use sea_orm::DatabaseConnection;
 
 use crate::{
-    graphql::query::Query,
-    loaders::anime::{
+    graphql::loaders::anime::{
         anime_series::AnimeSeriesLoader,
         anime_synonyms::AnimeSynonymsLoader,
         anime_theme_entries::AnimeThemeEntriesLoader,
@@ -17,6 +16,7 @@ use crate::{
             animetheme_group::AnimeThemeGroupLoader, animetheme_song::AnimeThemeSongLoader,
         },
     },
+    graphql::query::Query,
 };
 
 pub type AppSchema = Schema<Query, EmptyMutation, EmptySubscription>;
