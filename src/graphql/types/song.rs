@@ -1,6 +1,11 @@
-use async_graphql::SimpleObject;
+use async_graphql::{ComplexObject, Context, Result, SimpleObject, dataloader::DataLoader};
 
-use crate::entities::song;
+use crate::{
+    entities::song,
+    graphql::{
+        loaders::song::song_performances::SongPerformancesLoader, types::performance::Performance,
+    },
+};
 
 #[derive(SimpleObject)]
 pub struct SongTitle {
@@ -23,14 +28,31 @@ impl From<&song::Model> for SongTitle {
 ///
 /// For example, Staple Stable is the song for the Bakemonogatari OP1 AnimeTheme.
 #[derive(SimpleObject)]
+#[graphql(complex)]
 pub struct Song {
+    #[graphql(skip)]
+    pub id: u64,
     /// The title of the composition
     pub title: SongTitle,
+}
+
+#[ComplexObject]
+impl Song {
+    async fn performances(&self, ctx: &Context<'_>) -> Result<Vec<Performance>> {
+        let loader = ctx.data::<DataLoader<SongPerformancesLoader>>()?;
+
+        let models = loader.load_one(self.id).await?.unwrap_or_default();
+
+        Ok(models.into_iter().map(Performance::from).collect())
+    }
 }
 
 impl From<song::Model> for Song {
     fn from(model: song::Model) -> Self {
         let title = SongTitle::from(&model);
-        Self { title }
+        Self {
+            id: model.id,
+            title,
+        }
     }
 }

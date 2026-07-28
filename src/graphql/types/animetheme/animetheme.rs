@@ -31,8 +31,7 @@ pub struct AnimeTheme {
     /// The slug that represents the anime theme.
     pub slug: String,
     /// The type of the sequence
-    #[graphql(name = "type")]
-    pub themetype: ThemeType,
+    pub r#type: ThemeType,
 }
 
 #[ComplexObject]
@@ -74,7 +73,7 @@ impl From<animetheme::Model> for AnimeTheme {
             sequence: model.sequence,
             song_id: model.song_id,
             slug: model.slug,
-            themetype: model.themetype.into(),
+            r#type: model.r#type.into(),
         }
     }
 }

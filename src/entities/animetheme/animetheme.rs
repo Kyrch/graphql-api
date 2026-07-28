@@ -12,8 +12,7 @@ pub struct Model {
     pub sequence: Option<i32>,
     pub slug: String,
     pub song_id: Option<u64>,
-    #[sea_orm(column_name = "type")]
-    pub themetype: ThemeType,
+    pub r#type: ThemeType,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
