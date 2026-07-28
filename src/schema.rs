@@ -17,6 +17,7 @@ use crate::graphql::{
                 animetheme_group::AnimeThemeGroupLoader, animetheme_song::AnimeThemeSongLoader,
             },
         },
+        artist::artist_performances::ArtistPerformancesLoader,
         performance::{
             performance_artist::PerformanceArtistLoader,
             performance_member::PerformanceMemberLoader, performance_song::PerformanceSongLoader,
@@ -46,6 +47,9 @@ pub fn create_schema(db: DatabaseConnection) -> AppSchema {
 
     let anime_series_loader = DataLoader::new(AnimeSeriesLoader { db: db.clone() }, tokio::spawn);
 
+    let artist_performances_loader =
+        DataLoader::new(ArtistPerformancesLoader { db: db.clone() }, tokio::spawn);
+
     let song_performances_loader =
         DataLoader::new(SongPerformancesLoader { db: db.clone() }, tokio::spawn);
 
@@ -70,6 +74,7 @@ pub fn create_schema(db: DatabaseConnection) -> AppSchema {
         .data(animetheme_group_loader)
         .data(anime_theme_entries_loader)
         .data(anime_series_loader)
+        .data(artist_performances_loader)
         .data(song_performances_loader)
         .data(performance_artist_loader)
         .data(performance_member_loader)

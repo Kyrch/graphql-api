@@ -16,8 +16,6 @@ use crate::{
 #[graphql(complex)]
 pub struct Performance {
     #[graphql(skip)]
-    pub id: u64,
-    #[graphql(skip)]
     pub song_id: u64,
     #[graphql(skip)]
     pub artist_id: u64,
@@ -73,7 +71,6 @@ impl Performance {
 impl From<performance::Model> for Performance {
     fn from(model: performance::Model) -> Self {
         Self {
-            id: model.id,
             song_id: model.song_id,
             artist_id: model.artist_id,
             member_id: model.member_id,
