@@ -8,15 +8,22 @@ use crate::{
     entities::content::anime::{
         self, AnimeFormat as AnimeFormatEnum, AnimeSeason as AnimeSeasonEnum,
     },
-    graphql::loaders::anime::{
-        anime_series::AnimeSeriesLoader, anime_synonyms::AnimeSynonymsLoader,
-        anime_themes::AnimeThemesLoader,
-    },
-    graphql::types::{
-        content::anime_series::{AnimeSeriesConnection, AnimeSeriesEdge, AnimeSeriesEdgeFields},
-        content::animetheme::animetheme::AnimeTheme,
-        content::series::Series,
-        content::synonym::Synonym,
+    graphql::{
+        loaders::{
+            anime::{
+                anime_series::AnimeSeriesLoader, anime_synonyms::AnimeSynonymsLoader,
+                anime_themes::AnimeThemesLoader,
+            },
+            resourceable::{ResourceableKey, ResourceableLoader},
+        },
+        types::content::{
+            anime_series::{AnimeSeriesConnection, AnimeSeriesEdge, AnimeSeriesEdgeFields},
+            animetheme::animetheme::AnimeTheme,
+            externalresource::ExternalResource,
+            resourceable::ExternalResourceEdgeFields,
+            series::Series,
+            synonym::Synonym,
+        },
     },
 };
 
@@ -117,6 +124,37 @@ impl Anime {
         let models = loader.load_one(self.id).await?.unwrap_or_default();
 
         Ok(models.into_iter().map(AnimeTheme::from).collect())
+    }
+
+    async fn resources(
+        &self,
+        ctx: &Context<'_>,
+    ) -> Result<Connection<u64, ExternalResource, EmptyFields, ExternalResourceEdgeFields>> {
+        let loader = ctx.data::<DataLoader<ResourceableLoader>>()?;
+
+        let rows = loader
+            .load_one(ResourceableKey {
+                id: self.id,
+                resourceable_type: "anime".to_string(),
+            })
+            .await?
+            .unwrap_or_default();
+
+        let mut connection = Connection::with_additional_fields(false, false, EmptyFields);
+
+        for (pivot, resource) in rows {
+            connection.edges.push(Edge::with_additional_fields(
+                resource.id,
+                resource.into(),
+                ExternalResourceEdgeFields {
+                    r#as: pivot.r#as,
+                    created_at: pivot.created_at,
+                    updated_at: pivot.updated_at,
+                },
+            ));
+        }
+
+        Ok(connection)
     }
 
     async fn series(

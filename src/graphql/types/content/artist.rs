@@ -1,10 +1,20 @@
-use async_graphql::{ComplexObject, Context, Result, SimpleObject, dataloader::DataLoader};
+use async_graphql::{
+    ComplexObject, Context, Result, SimpleObject,
+    connection::{Connection, Edge, EmptyFields},
+    dataloader::DataLoader,
+};
 
 use crate::{
     entities::content::artist,
     graphql::{
-        loaders::artist::artist_performances::ArtistPerformancesLoader,
-        types::content::performance::Performance,
+        loaders::{
+            artist::artist_performances::ArtistPerformancesLoader,
+            resourceable::{ResourceableKey, ResourceableLoader},
+        },
+        types::content::{
+            externalresource::ExternalResource, performance::Performance,
+            resourceable::ExternalResourceEdgeFields,
+        },
     },
 };
 
@@ -49,6 +59,37 @@ impl Artist {
         let models = loader.load_one(self.id).await?.unwrap_or_default();
 
         Ok(models.into_iter().map(Performance::from).collect())
+    }
+
+    async fn resources(
+        &self,
+        ctx: &Context<'_>,
+    ) -> Result<Connection<u64, ExternalResource, EmptyFields, ExternalResourceEdgeFields>> {
+        let loader = ctx.data::<DataLoader<ResourceableLoader>>()?;
+
+        let rows = loader
+            .load_one(ResourceableKey {
+                id: self.id,
+                resourceable_type: "artist".to_string(),
+            })
+            .await?
+            .unwrap_or_default();
+
+        let mut connection = Connection::with_additional_fields(false, false, EmptyFields);
+
+        for (pivot, resource) in rows {
+            connection.edges.push(Edge::with_additional_fields(
+                resource.id,
+                resource.into(),
+                ExternalResourceEdgeFields {
+                    r#as: pivot.r#as,
+                    created_at: pivot.created_at,
+                    updated_at: pivot.updated_at,
+                },
+            ));
+        }
+
+        Ok(connection)
     }
 }
 

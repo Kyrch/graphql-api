@@ -23,6 +23,7 @@ use crate::graphql::{
             performance_artist::PerformanceArtistLoader,
             performance_member::PerformanceMemberLoader, performance_song::PerformanceSongLoader,
         },
+        resourceable::ResourceableLoader,
         song::song_performances::SongPerformancesLoader,
         video::{video_audio::VideoAudioLoader, video_script::VideoScriptLoader},
     },
@@ -70,6 +71,8 @@ pub fn create_schema(db: DatabaseConnection) -> AppSchema {
 
     let video_script_loader = DataLoader::new(VideoScriptLoader { db: db.clone() }, tokio::spawn);
 
+    let resourceable_loader = DataLoader::new(ResourceableLoader { db: db.clone() }, tokio::spawn);
+
     Schema::build(Query, EmptyMutation, EmptySubscription)
         .data(db)
         .data(anime_synonyms_loader)
@@ -86,6 +89,7 @@ pub fn create_schema(db: DatabaseConnection) -> AppSchema {
         .data(performance_song_loader)
         .data(video_audio_loader)
         .data(video_script_loader)
+        .data(resourceable_loader)
         .finish()
 }
 
