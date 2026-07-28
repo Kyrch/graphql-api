@@ -9,9 +9,13 @@ use sea_orm::DatabaseConnection;
 use crate::{
     graphql::query::Query,
     loaders::anime::{
-        anime_series::AnimeSeriesLoader, anime_synonyms::AnimeSynonymsLoader,
-        anime_theme_entries::AnimeThemeEntriesLoader, anime_themes::AnimeThemesLoader,
-        animetheme::animetheme_song::AnimeThemeSongLoader,
+        anime_series::AnimeSeriesLoader,
+        anime_synonyms::AnimeSynonymsLoader,
+        anime_theme_entries::AnimeThemeEntriesLoader,
+        anime_themes::AnimeThemesLoader,
+        animetheme::{
+            animetheme_group::AnimeThemeGroupLoader, animetheme_song::AnimeThemeSongLoader,
+        },
     },
 };
 
@@ -26,6 +30,9 @@ pub fn create_schema(db: DatabaseConnection) -> AppSchema {
     let animetheme_song_loader =
         DataLoader::new(AnimeThemeSongLoader { db: db.clone() }, tokio::spawn);
 
+    let animetheme_group_loader =
+        DataLoader::new(AnimeThemeGroupLoader { db: db.clone() }, tokio::spawn);
+
     let anime_theme_entries_loader =
         DataLoader::new(AnimeThemeEntriesLoader { db: db.clone() }, tokio::spawn);
 
@@ -36,6 +43,7 @@ pub fn create_schema(db: DatabaseConnection) -> AppSchema {
         .data(anime_synonyms_loader)
         .data(anime_themes_loader)
         .data(animetheme_song_loader)
+        .data(animetheme_group_loader)
         .data(anime_theme_entries_loader)
         .data(anime_series_loader)
         .finish()

@@ -4,3 +4,4 @@ pub mod animetheme;
 pub mod series;
 pub mod song;
 pub mod synonym;
+pub mod theme_group;

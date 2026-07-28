@@ -3,7 +3,7 @@ use async_graphql::SimpleObject;
 use crate::entities::animetheme::animethemeentry::animethemeentry;
 
 /// Represents a version of an anime theme.
-/// 
+///
 /// For example, the ED theme of the Bakemonogatari anime has three anime theme entries to represent three versions.
 #[derive(SimpleObject)]
 pub struct AnimeThemeEntry {

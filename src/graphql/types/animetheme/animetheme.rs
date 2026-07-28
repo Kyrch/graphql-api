@@ -2,10 +2,15 @@ use async_graphql::{ComplexObject, Context, Enum, Result, SimpleObject, dataload
 
 use crate::{
     entities::animetheme::animetheme::{self, ThemeType as ThemeTypeEnum},
-    graphql::types::{animetheme::animethemeentry::animethemeentry::AnimeThemeEntry, song::Song},
+    graphql::types::{
+        animetheme::animethemeentry::animethemeentry::AnimeThemeEntry, song::Song,
+        theme_group::ThemeGroup,
+    },
     loaders::anime::{
         anime_theme_entries::AnimeThemeEntriesLoader,
-        animetheme::animetheme_song::AnimeThemeSongLoader,
+        animetheme::{
+            animetheme_group::AnimeThemeGroupLoader, animetheme_song::AnimeThemeSongLoader,
+        },
     },
 };
 
@@ -17,6 +22,8 @@ use crate::{
 pub struct AnimeTheme {
     /// The primary key of the resource
     pub id: u64,
+    #[graphql(skip)]
+    pub group_id: Option<u64>,
     /// The numeric ordering of the theme
     pub sequence: Option<i32>,
     #[graphql(skip)]
@@ -47,12 +54,23 @@ impl AnimeTheme {
 
         Ok(loader.load_one(song_id).await?.map(Into::into))
     }
+
+    async fn group(&self, ctx: &Context<'_>) -> Result<Option<ThemeGroup>> {
+        let Some(group_id) = self.group_id else {
+            return Ok(None);
+        };
+
+        let loader = ctx.data::<DataLoader<AnimeThemeGroupLoader>>()?;
+
+        Ok(loader.load_one(group_id).await?.map(Into::into))
+    }
 }
 
 impl From<animetheme::Model> for AnimeTheme {
     fn from(model: animetheme::Model) -> Self {
         Self {
             id: model.id,
+            group_id: model.group_id,
             sequence: model.sequence,
             song_id: model.song_id,
             slug: model.slug,

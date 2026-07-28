@@ -1,6 +1,6 @@
 use sea_orm::entity::prelude::*;
 
-use crate::entities::{anime, animetheme::animethemeentry::animethemeentry, song};
+use crate::entities::{anime, animetheme::animethemeentry::animethemeentry, song, themegroup};
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "anime_themes")]
@@ -24,14 +24,23 @@ pub enum Relation {
         to = "anime::Column::Id"
     )]
     Anime,
+
     #[sea_orm(has_many = "animethemeentry::Entity")]
     AnimeThemeEntries,
+
     #[sea_orm(
         belongs_to = "song::Entity",
         from = "Column::SongId",
         to = "song::Column::Id"
     )]
     Song,
+
+    #[sea_orm(
+        belongs_to = "themegroup::Entity",
+        from = "Column::GroupId",
+        to = "themegroup::Column::Id"
+    )]
+    ThemeGroup,
 }
 
 impl Related<anime::Entity> for Entity {
@@ -49,6 +58,12 @@ impl Related<animethemeentry::Entity> for Entity {
 impl Related<song::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Song.def()
+    }
+}
+
+impl Related<themegroup::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::ThemeGroup.def()
     }
 }
 
