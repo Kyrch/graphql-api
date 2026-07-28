@@ -156,8 +156,8 @@ impl From<anime::Model> for Anime {
         let title = AnimeTitle::from(&model);
         Self {
             id: model.id,
-            format: model.format.map(|f| f.into()),
-            season: model.season.map(|f| f.into()),
+            format: model.format.map(Into::into),
+            season: model.season.map(Into::into),
             slug: model.slug,
             synopsis: model.synopsis,
             title,

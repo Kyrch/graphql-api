@@ -22,6 +22,7 @@ use crate::graphql::{
             performance_member::PerformanceMemberLoader, performance_song::PerformanceSongLoader,
         },
         song::song_performances::SongPerformancesLoader,
+        video::{video_audio::VideoAudioLoader, video_script::VideoScriptLoader},
     },
     query::Query,
 };
@@ -48,13 +49,18 @@ pub fn create_schema(db: DatabaseConnection) -> AppSchema {
     let song_performances_loader =
         DataLoader::new(SongPerformancesLoader { db: db.clone() }, tokio::spawn);
 
-    let performance_artist =
+    let performance_artist_loader =
         DataLoader::new(PerformanceArtistLoader { db: db.clone() }, tokio::spawn);
 
-    let performance_member =
+    let performance_member_loader =
         DataLoader::new(PerformanceMemberLoader { db: db.clone() }, tokio::spawn);
 
-    let performance_song = DataLoader::new(PerformanceSongLoader { db: db.clone() }, tokio::spawn);
+    let performance_song_loader =
+        DataLoader::new(PerformanceSongLoader { db: db.clone() }, tokio::spawn);
+
+    let video_audio_loader = DataLoader::new(VideoAudioLoader { db: db.clone() }, tokio::spawn);
+
+    let video_script_loader = DataLoader::new(VideoScriptLoader { db: db.clone() }, tokio::spawn);
 
     Schema::build(Query, EmptyMutation, EmptySubscription)
         .data(db)
@@ -65,9 +71,11 @@ pub fn create_schema(db: DatabaseConnection) -> AppSchema {
         .data(anime_theme_entries_loader)
         .data(anime_series_loader)
         .data(song_performances_loader)
-        .data(performance_artist)
-        .data(performance_member)
-        .data(performance_song)
+        .data(performance_artist_loader)
+        .data(performance_member_loader)
+        .data(performance_song_loader)
+        .data(video_audio_loader)
+        .data(video_script_loader)
         .finish()
 }
 
