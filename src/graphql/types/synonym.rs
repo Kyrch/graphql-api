@@ -2,9 +2,14 @@ use async_graphql::SimpleObject;
 
 use crate::entities::synonym;
 
+/// Represents an alternate title or common abbreviation for an entity.
+///
+/// For example, the anime Bakemonogatari has the synonym "Monstory".
 #[derive(SimpleObject)]
 pub struct Synonym {
+    /// The language of the synonym. It may be used for short synonyms
     pub language: Option<String>,
+    /// The alternate title or common abbreviations
     pub text: String,
 }
 

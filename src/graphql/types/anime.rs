@@ -1,12 +1,17 @@
 use async_graphql::{
-    ComplexObject, Context, Enum, OutputType, Result, SimpleObject,
-    connection::{Connection, DefaultConnectionName, Edge, EdgeNameType, EmptyFields},
+    ComplexObject, Context, Enum, Result, SimpleObject,
+    connection::{Connection, Edge, EmptyFields},
     dataloader::DataLoader,
 };
 
 use crate::{
     entities::anime::{self, AnimeFormat as AnimeFormatEnum, AnimeSeason as AnimeSeasonEnum},
-    graphql::types::{animetheme::animetheme::AnimeTheme, series::Series, synonym::Synonym},
+    graphql::types::{
+        anime_series::{AnimeSeriesConnection, AnimeSeriesEdge, AnimeSeriesEdgeFields},
+        animetheme::animetheme::AnimeTheme,
+        series::Series,
+        synonym::Synonym,
+    },
     loaders::anime::{
         anime_series::AnimeSeriesLoader, anime_synonyms::AnimeSynonymsLoader,
         anime_themes::AnimeThemesLoader,
@@ -72,30 +77,26 @@ impl From<&anime::Model> for AnimeTitle {
     }
 }
 
+/// Represents a production with at least one opening or ending sequence.
+///
+/// For example, Bakemonogatari is an anime production with five opening sequences and one ending sequence.
 #[derive(SimpleObject)]
 #[graphql(complex)]
 pub struct Anime {
+    /// The primary key of the resource
     pub id: u64,
-    pub format: AnimeFormat,
-    pub season: AnimeSeason,
-    pub slug: String,
-    pub synopsis: Option<String>,
+    /// The primary title of the anime
     pub title: AnimeTitle,
-    pub year: i32,
-}
-
-#[derive(SimpleObject)]
-pub struct SeriesEdgeFields {
-    pub created_at: Option<String>,
-    pub updated_at: Option<String>,
-}
-
-pub struct AnimeSeriesEdge;
-
-impl EdgeNameType for AnimeSeriesEdge {
-    fn type_name<T: OutputType>() -> String {
-        "AnimeSeriesEdge".to_string()
-    }
+    /// The format of the anime
+    pub format: Option<AnimeFormat>,
+    /// The premiere season of the anime
+    pub season: Option<AnimeSeason>,
+    /// The URL slug & route key of the resource
+    pub slug: String,
+    /// The brief summary of the anime
+    pub synopsis: Option<String>,
+    /// The premiere season year of the anime
+    pub year: Option<i32>,
 }
 
 #[ComplexObject]
@@ -124,8 +125,8 @@ impl Anime {
             u64,
             Series,
             EmptyFields,
-            SeriesEdgeFields,
-            DefaultConnectionName,
+            AnimeSeriesEdgeFields,
+            AnimeSeriesConnection,
             AnimeSeriesEdge,
         >,
     > {
@@ -139,9 +140,9 @@ impl Anime {
             connection.edges.push(Edge::with_additional_fields(
                 series.id,
                 series.into(),
-                SeriesEdgeFields {
-                    created_at: pivot.created_at.map(|dt| dt.to_rfc3339()),
-                    updated_at: pivot.updated_at.map(|dt| dt.to_rfc3339()),
+                AnimeSeriesEdgeFields {
+                    created_at: pivot.created_at,
+                    updated_at: pivot.updated_at,
                 },
             ));
         }
@@ -155,8 +156,8 @@ impl From<anime::Model> for Anime {
         let title = AnimeTitle::from(&model);
         Self {
             id: model.id,
-            format: model.format.into(),
-            season: model.season.into(),
+            format: model.format.map(|f| f.into()),
+            season: model.season.map(|f| f.into()),
             slug: model.slug,
             synopsis: model.synopsis,
             title,

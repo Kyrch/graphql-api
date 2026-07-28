@@ -7,14 +7,14 @@ use crate::entities::{anime_series, animetheme::animetheme, series, synonym};
 pub struct Model {
     #[sea_orm(primary_key, column_name = "anime_id")]
     pub id: u64,
-    pub format: AnimeFormat,
-    pub season: AnimeSeason,
+    pub format: Option<AnimeFormat>,
+    pub season: Option<AnimeSeason>,
     pub slug: String,
     pub synopsis: Option<String>,
     pub title: String,
     pub title_english: Option<String>,
     pub title_native: Option<String>,
-    pub year: i32,
+    pub year: Option<i32>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
