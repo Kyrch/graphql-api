@@ -1,8 +1,9 @@
-use async_graphql::{ComplexObject, Context, Enum, Result, SimpleObject, dataloader::DataLoader};
+use async_graphql::{ComplexObject, Context, Result, SimpleObject, dataloader::DataLoader};
 
 use crate::{
-    entities::content::animetheme::animetheme::{self, ThemeType as ThemeTypeEnum},
+    entities::content::animetheme::animetheme::{self},
     graphql::{
+        enums::content::themetype::ThemeType,
         loaders::content::anime::{
             anime_theme_entries::AnimeThemeEntriesLoader,
             animetheme::{
@@ -91,26 +92,6 @@ impl From<animetheme::Model> for AnimeTheme {
             song_id: model.song_id,
             slug: model.slug,
             r#type: model.r#type.into(),
-        }
-    }
-}
-
-#[derive(Enum, Copy, Clone, Eq, PartialEq)]
-pub enum ThemeType {
-    /// Opening
-    OP,
-    /// Ending
-    ED,
-    /// Insert Song
-    IN,
-}
-
-impl From<ThemeTypeEnum> for ThemeType {
-    fn from(value: ThemeTypeEnum) -> Self {
-        match value {
-            ThemeTypeEnum::OP => ThemeType::OP,
-            ThemeTypeEnum::ED => ThemeType::ED,
-            ThemeTypeEnum::IN => ThemeType::IN,
         }
     }
 }

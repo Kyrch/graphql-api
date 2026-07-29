@@ -1,6 +1,9 @@
-use async_graphql::{Enum, SimpleObject};
+use async_graphql::SimpleObject;
 
-use crate::entities::content::image::{self, ImageFacet as ImageFacetEnum};
+use crate::{
+    entities::content::image::{self},
+    graphql::enums::content::imagefacet::ImageFacet,
+};
 
 /// Represents a visual component for another resource such as an anime or artist.
 ///
@@ -24,29 +27,6 @@ impl From<image::Model> for Image {
             facet: model.facet.into(),
             path: model.path,
             link: "".to_string(),
-        }
-    }
-}
-
-#[derive(Enum, Copy, Clone, Eq, PartialEq)]
-pub enum ImageFacet {
-    SmallCover,
-    LargeCover,
-    Grill,
-    Document,
-    Avatar,
-    Banner,
-}
-
-impl From<ImageFacetEnum> for ImageFacet {
-    fn from(value: ImageFacetEnum) -> Self {
-        match value {
-            ImageFacetEnum::SmallCover => ImageFacet::SmallCover,
-            ImageFacetEnum::LargeCover => ImageFacet::LargeCover,
-            ImageFacetEnum::Grill => ImageFacet::Grill,
-            ImageFacetEnum::Document => ImageFacet::Document,
-            ImageFacetEnum::Avatar => ImageFacet::Avatar,
-            ImageFacetEnum::Banner => ImageFacet::Banner,
         }
     }
 }

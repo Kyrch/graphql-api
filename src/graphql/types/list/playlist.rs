@@ -1,8 +1,9 @@
-use async_graphql::{ComplexObject, Context, Enum, Result, SimpleObject, dataloader::DataLoader};
+use async_graphql::{ComplexObject, Context, Result, SimpleObject, dataloader::DataLoader};
 
 use crate::{
-    entities::list::playlist::{self, PlaylistVisibility as PlaylistVisibilityEnum},
+    entities::list::playlist::{self},
     graphql::{
+        enums::list::playlistvisibility::PlaylistVisibility,
         loaders::list::playlist::{
             playlist_track_first_last::PlaylistTrackFirstLastLoader,
             playlist_tracks::PlaylistTracksLoader, playlist_user::PlaylistUserLoader,
@@ -10,23 +11,6 @@ use crate::{
         types::{auth::user::User, list::track::PlaylistTrack},
     },
 };
-
-#[derive(Enum, Copy, Clone, Eq, PartialEq)]
-pub enum PlaylistVisibility {
-    Public,
-    Private,
-    Unlisted,
-}
-
-impl From<PlaylistVisibilityEnum> for PlaylistVisibility {
-    fn from(value: PlaylistVisibilityEnum) -> Self {
-        match value {
-            PlaylistVisibilityEnum::Public => PlaylistVisibility::Public,
-            PlaylistVisibilityEnum::Private => PlaylistVisibility::Private,
-            PlaylistVisibilityEnum::Unlisted => PlaylistVisibility::Unlisted,
-        }
-    }
-}
 
 /// Represents a list of ordered tracks intended for continuous playback.
 ///

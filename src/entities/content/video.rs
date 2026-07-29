@@ -1,7 +1,10 @@
 use sea_orm::entity::prelude::*;
 
-use crate::entities::content::{
-    animetheme::animethemeentry::animethemeentry, animethemeentry_videos, audio, videoscript,
+use crate::{
+    entities::content::{
+        animetheme::animethemeentry::animethemeentry, animethemeentry_videos, audio, videoscript,
+    },
+    enums::content::{videooverlap::VideoOverlap, videosource::VideoSource},
 };
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
@@ -67,38 +70,3 @@ impl Related<animethemeentry::Entity> for Entity {
 }
 
 impl ActiveModelBehavior for ActiveModel {}
-
-#[derive(Debug, Copy, Clone, Eq, EnumIter, PartialEq, DeriveActiveEnum)]
-#[sea_orm(rs_type = "i32", db_type = "Integer")]
-pub enum VideoOverlap {
-    #[sea_orm(num_value = 0)]
-    None,
-
-    #[sea_orm(num_value = 1)]
-    Trans,
-
-    #[sea_orm(num_value = 2)]
-    Over,
-}
-
-#[derive(Debug, Copy, Clone, Eq, EnumIter, PartialEq, DeriveActiveEnum)]
-#[sea_orm(rs_type = "i32", db_type = "Integer")]
-pub enum VideoSource {
-    #[sea_orm(num_value = 0)]
-    WEB,
-
-    #[sea_orm(num_value = 1)]
-    RAW,
-
-    #[sea_orm(num_value = 2)]
-    BD,
-
-    #[sea_orm(num_value = 3)]
-    DVD,
-
-    #[sea_orm(num_value = 4)]
-    VHS,
-
-    #[sea_orm(num_value = 5)]
-    LD,
-}

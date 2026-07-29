@@ -1,5 +1,7 @@
 use sea_orm::entity::prelude::*;
 
+use crate::enums::list::playlistvisibility::PlaylistVisibility;
+
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "playlists")]
 pub struct Model {
@@ -18,16 +20,3 @@ pub struct Model {
 pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}
-
-#[derive(Debug, Copy, Clone, Eq, EnumIter, PartialEq, DeriveActiveEnum)]
-#[sea_orm(rs_type = "i32", db_type = "Integer")]
-pub enum PlaylistVisibility {
-    #[sea_orm(num_value = 0)]
-    Public,
-
-    #[sea_orm(num_value = 1)]
-    Private,
-
-    #[sea_orm(num_value = 2)]
-    Unlisted,
-}

@@ -1,14 +1,13 @@
 use async_graphql::{
-    ComplexObject, Context, Enum, Result, SimpleObject,
+    ComplexObject, Context, Result, SimpleObject,
     connection::{Connection, Edge, EmptyFields},
     dataloader::DataLoader,
 };
 
 use crate::{
-    entities::content::anime::{
-        self, AnimeFormat as AnimeFormatEnum, AnimeSeason as AnimeSeasonEnum,
-    },
+    entities::content::anime::{self},
     graphql::{
+        enums::content::{animeformat::AnimeFormat, animeseason::AnimeSeason},
         loaders::content::{
             anime::{
                 anime_series::AnimeSeriesLoader, anime_studios::AnimeStudiosLoader,
@@ -31,48 +30,6 @@ use crate::{
         },
     },
 };
-
-#[derive(Enum, Copy, Clone, Eq, PartialEq)]
-pub enum AnimeFormat {
-    TV,
-    TVShort,
-    OVA,
-    Movie,
-    Special,
-    ONA,
-}
-
-impl From<AnimeFormatEnum> for AnimeFormat {
-    fn from(value: AnimeFormatEnum) -> Self {
-        match value {
-            AnimeFormatEnum::TV => AnimeFormat::TV,
-            AnimeFormatEnum::TVShort => AnimeFormat::TVShort,
-            AnimeFormatEnum::OVA => AnimeFormat::OVA,
-            AnimeFormatEnum::Movie => AnimeFormat::Movie,
-            AnimeFormatEnum::Special => AnimeFormat::Special,
-            AnimeFormatEnum::ONA => AnimeFormat::ONA,
-        }
-    }
-}
-
-#[derive(Enum, Copy, Clone, Eq, PartialEq)]
-pub enum AnimeSeason {
-    Winter,
-    Spring,
-    Summer,
-    Fall,
-}
-
-impl From<AnimeSeasonEnum> for AnimeSeason {
-    fn from(value: AnimeSeasonEnum) -> Self {
-        match value {
-            AnimeSeasonEnum::Winter => AnimeSeason::Winter,
-            AnimeSeasonEnum::Spring => AnimeSeason::Spring,
-            AnimeSeasonEnum::Summer => AnimeSeason::Summer,
-            AnimeSeasonEnum::Fall => AnimeSeason::Fall,
-        }
-    }
-}
 
 #[derive(SimpleObject)]
 pub struct AnimeTitle {

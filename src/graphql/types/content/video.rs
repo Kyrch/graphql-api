@@ -1,54 +1,13 @@
-use async_graphql::{ComplexObject, Context, Enum, Result, SimpleObject, dataloader::DataLoader};
+use async_graphql::{ComplexObject, Context, Result, SimpleObject, dataloader::DataLoader};
 
 use crate::{
-    entities::content::video::{
-        self, VideoOverlap as VideoOverlapEnum, VideoSource as VideoSourceEnum,
-    },
+    entities::content::video::{self},
     graphql::{
+        enums::content::{videooverlap::VideoOverlap, videosource::VideoSource},
         loaders::content::video::{video_audio::VideoAudioLoader, video_script::VideoScriptLoader},
         types::content::{audio::Audio, videoscript::VideoScript},
     },
 };
-
-#[derive(Enum, Copy, Clone, Eq, PartialEq)]
-pub enum VideoOverlap {
-    None,
-    Trans,
-    Over,
-}
-
-impl From<VideoOverlapEnum> for VideoOverlap {
-    fn from(value: VideoOverlapEnum) -> Self {
-        match value {
-            VideoOverlapEnum::None => VideoOverlap::None,
-            VideoOverlapEnum::Trans => VideoOverlap::Trans,
-            VideoOverlapEnum::Over => VideoOverlap::Over,
-        }
-    }
-}
-
-#[derive(Enum, Copy, Clone, Eq, PartialEq)]
-pub enum VideoSource {
-    WEB,
-    RAW,
-    BD,
-    DVD,
-    VHS,
-    LD,
-}
-
-impl From<VideoSourceEnum> for VideoSource {
-    fn from(value: VideoSourceEnum) -> Self {
-        match value {
-            VideoSourceEnum::WEB => VideoSource::WEB,
-            VideoSourceEnum::RAW => VideoSource::RAW,
-            VideoSourceEnum::BD => VideoSource::BD,
-            VideoSourceEnum::DVD => VideoSource::DVD,
-            VideoSourceEnum::VHS => VideoSource::VHS,
-            VideoSourceEnum::LD => VideoSource::LD,
-        }
-    }
-}
 
 /// Represents a WebM of an anime theme.
 ///

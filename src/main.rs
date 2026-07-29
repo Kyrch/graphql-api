@@ -1,5 +1,6 @@
 mod db;
 mod entities;
+mod enums;
 mod graphql;
 mod schema;
 

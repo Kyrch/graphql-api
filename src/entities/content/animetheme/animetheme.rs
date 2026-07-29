@@ -1,7 +1,8 @@
 use sea_orm::entity::prelude::*;
 
-use crate::entities::content::{
-    anime, animetheme::animethemeentry::animethemeentry, song, themegroup,
+use crate::{
+    entities::content::{anime, animetheme::animethemeentry::animethemeentry, song, themegroup},
+    enums::content::themetype::ThemeType,
 };
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
@@ -69,16 +70,3 @@ impl Related<themegroup::Entity> for Entity {
 }
 
 impl ActiveModelBehavior for ActiveModel {}
-
-#[derive(Debug, Copy, Clone, Eq, EnumIter, PartialEq, DeriveActiveEnum)]
-#[sea_orm(rs_type = "i32", db_type = "Integer")]
-pub enum ThemeType {
-    #[sea_orm(num_value = 0)]
-    OP,
-
-    #[sea_orm(num_value = 1)]
-    ED,
-
-    #[sea_orm(num_value = 2)]
-    IN,
-}

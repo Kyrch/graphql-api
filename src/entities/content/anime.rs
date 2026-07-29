@@ -1,7 +1,10 @@
 use sea_orm::entity::prelude::*;
 
-use crate::entities::content::{
-    anime_series, anime_studios, animetheme::animetheme, series, studio, synonym,
+use crate::{
+    entities::content::{
+        anime_series, anime_studios, animetheme::animetheme, series, studio, synonym,
+    },
+    enums::content::{animeformat::AnimeFormat, animeseason::AnimeSeason},
 };
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
@@ -70,41 +73,3 @@ impl Related<studio::Entity> for Entity {
 }
 
 impl ActiveModelBehavior for ActiveModel {}
-
-#[derive(Debug, Copy, Clone, Eq, EnumIter, PartialEq, DeriveActiveEnum)]
-#[sea_orm(rs_type = "i32", db_type = "Integer")]
-pub enum AnimeFormat {
-    #[sea_orm(num_value = 0)]
-    TV,
-
-    #[sea_orm(num_value = 1)]
-    TVShort,
-
-    #[sea_orm(num_value = 2)]
-    OVA,
-
-    #[sea_orm(num_value = 3)]
-    Movie,
-
-    #[sea_orm(num_value = 4)]
-    Special,
-
-    #[sea_orm(num_value = 5)]
-    ONA,
-}
-
-#[derive(Debug, Copy, Clone, Eq, EnumIter, PartialEq, DeriveActiveEnum)]
-#[sea_orm(rs_type = "i32", db_type = "Integer")]
-pub enum AnimeSeason {
-    #[sea_orm(num_value = 0)]
-    Winter,
-
-    #[sea_orm(num_value = 1)]
-    Spring,
-
-    #[sea_orm(num_value = 2)]
-    Summer,
-
-    #[sea_orm(num_value = 3)]
-    Fall,
-}

@@ -1,3 +1,4 @@
+pub mod enums;
 pub mod loaders;
 pub mod query;
 pub mod types;
