@@ -39,12 +39,12 @@ pub struct FeaturedTheme {
 
 #[ComplexObject]
 impl FeaturedTheme {
-    /// /// The start date of the resource
+    /// The start date of the resource
     async fn start_at(&self, #[graphql(default = "%+")] format: String) -> Option<String> {
         format_datetime(self.start_at.as_ref(), &format)
     }
 
-    /// /// The end date of the resource
+    /// The end date of the resource
     async fn end_at(&self, #[graphql(default = "%+")] format: String) -> Option<String> {
         format_datetime(self.end_at.as_ref(), &format)
     }
