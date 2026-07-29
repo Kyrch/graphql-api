@@ -29,6 +29,7 @@ use crate::graphql::loaders::{
         song::song_performances::SongPerformancesLoader,
         video::{video_audio::VideoAudioLoader, video_script::VideoScriptLoader},
     },
+    document::page_page::PagePageLoader,
     list::playlist::{
         playlist_track_first_last::PlaylistTrackFirstLastLoader,
         playlist_tracks::PlaylistTracksLoader, playlist_user::PlaylistUserLoader,
@@ -75,5 +76,6 @@ impl<Query> RegisterLoaders for SchemaBuilder<Query, EmptyMutation, EmptySubscri
             .data(loader(TrackEntryLoader { db: db.clone() }))
             .data(loader(TrackVideoLoader { db: db.clone() }))
             .data(loader(TrackTrackLoader { db: db.clone() }))
+            .data(loader(PagePageLoader { db: db.clone() }))
     }
 }
