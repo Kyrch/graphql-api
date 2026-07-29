@@ -7,7 +7,7 @@ use async_graphql::{
 use crate::{
     entities::content::studio,
     graphql::{
-        loaders::{
+        loaders::content::{
             imageable::{ImageableKey, ImageableLoader},
             resourceable::{ResourceableKey, ResourceableLoader},
         },

@@ -8,7 +8,7 @@ use sea_orm::DatabaseConnection;
 
 use crate::graphql::{
     loaders::{
-        anime::{
+        content::anime::{
             anime_series::AnimeSeriesLoader,
             anime_studios::AnimeStudiosLoader,
             anime_synonyms::AnimeSynonymsLoader,
@@ -24,21 +24,21 @@ use crate::graphql::{
                 },
             },
         },
-        artist::artist_performances::ArtistPerformancesLoader,
-        imageable::ImageableLoader,
+        content::artist::artist_performances::ArtistPerformancesLoader,
+        content::imageable::ImageableLoader,
+        content::performance::{
+            performance_artist::PerformanceArtistLoader,
+            performance_member::PerformanceMemberLoader, performance_song::PerformanceSongLoader,
+        },
+        content::resourceable::ResourceableLoader,
+        content::song::song_performances::SongPerformancesLoader,
+        content::video::{video_audio::VideoAudioLoader, video_script::VideoScriptLoader},
         list::playlist::{
             playlist_track_first_last::PlaylistTrackFirstLastLoader,
             playlist_tracks::PlaylistTracksLoader, playlist_user::PlaylistUserLoader,
             track_entry::TrackEntryLoader, track_track::TrackTrackLoader,
             track_video::TrackVideoLoader,
         },
-        performance::{
-            performance_artist::PerformanceArtistLoader,
-            performance_member::PerformanceMemberLoader, performance_song::PerformanceSongLoader,
-        },
-        resourceable::ResourceableLoader,
-        song::song_performances::SongPerformancesLoader,
-        video::{video_audio::VideoAudioLoader, video_script::VideoScriptLoader},
     },
     query::Query,
 };

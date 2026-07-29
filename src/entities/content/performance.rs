@@ -41,12 +41,6 @@ pub enum Relation {
     Song,
 }
 
-impl Entity {
-    pub fn member() -> RelationDef {
-        Relation::Member.def()
-    }
-}
-
 impl Related<artist::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Artist.def()

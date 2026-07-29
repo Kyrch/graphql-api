@@ -7,7 +7,7 @@ use async_graphql::{
 use crate::{
     entities::content::animetheme::animethemeentry::animethemeentry,
     graphql::{
-        loaders::anime::animetheme::animethemeentry::{
+        loaders::content::anime::animetheme::animethemeentry::{
             animethemeentry_theme::AnimeThemeEntryThemeLoader,
             animethemeentry_videos::AnimeThemeEntryVideosLoader,
         },

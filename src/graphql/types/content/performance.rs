@@ -3,7 +3,7 @@ use async_graphql::{ComplexObject, Context, Result, SimpleObject, dataloader::Da
 use crate::{
     entities::content::performance,
     graphql::{
-        loaders::performance::{
+        loaders::content::performance::{
             performance_artist::PerformanceArtistLoader,
             performance_member::PerformanceMemberLoader, performance_song::PerformanceSongLoader,
         },

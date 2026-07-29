@@ -9,7 +9,7 @@ use crate::{
         self, AnimeFormat as AnimeFormatEnum, AnimeSeason as AnimeSeasonEnum,
     },
     graphql::{
-        loaders::{
+        loaders::content::{
             anime::{
                 anime_series::AnimeSeriesLoader, anime_studios::AnimeStudiosLoader,
                 anime_synonyms::AnimeSynonymsLoader, anime_themes::AnimeThemesLoader,
