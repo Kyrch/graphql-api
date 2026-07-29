@@ -15,6 +15,7 @@ use crate::{
                 animetheme::animethemeentry::animethemeentry::AnimeThemeEntry, video::Video,
             },
         },
+        utils::format_datetime,
     },
 };
 
@@ -24,9 +25,9 @@ use crate::{
 pub struct FeaturedTheme {
     /// The primary key of the resource
     pub id: u64,
-    /// The start date of the resource
+    #[graphql(skip)]
     pub start_at: Option<DateTime<Utc>>,
-    /// The end date of the resource
+    #[graphql(skip)]
     pub end_at: Option<DateTime<Utc>>,
     #[graphql(skip)]
     pub entry_id: Option<u64>,
@@ -38,6 +39,16 @@ pub struct FeaturedTheme {
 
 #[ComplexObject]
 impl FeaturedTheme {
+    /// /// The start date of the resource
+    async fn start_at(&self, #[graphql(default = "%+")] format: String) -> Option<String> {
+        format_datetime(self.start_at.as_ref(), &format)
+    }
+
+    /// /// The end date of the resource
+    async fn end_at(&self, #[graphql(default = "%+")] format: String) -> Option<String> {
+        format_datetime(self.end_at.as_ref(), &format)
+    }
+
     async fn animethemeentry(&self, ctx: &Context<'_>) -> Result<Option<AnimeThemeEntry>> {
         let Some(entry_id) = self.entry_id else {
             return Ok(None);
