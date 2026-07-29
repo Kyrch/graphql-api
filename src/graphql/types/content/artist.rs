@@ -42,7 +42,7 @@ impl From<&artist::Model> for ArtistName {
 #[derive(SimpleObject)]
 #[graphql(complex)]
 pub struct Artist {
-    #[graphql(skip)]
+    /// The primary key of the resource
     pub id: u64,
     /// The primary title of the artist
     pub name: ArtistName,

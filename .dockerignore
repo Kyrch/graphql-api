@@ -3,4 +3,4 @@ target
 .env
 .idea
 .vscode
-content.sql
+*.sql

@@ -99,12 +99,17 @@ impl From<&anime::Model> for AnimeTitle {
 pub struct Anime {
     /// The primary key of the resource
     pub id: u64,
+    pub name: String,
     /// The primary title of the anime
     pub title: AnimeTitle,
     /// The format of the anime
     pub format: Option<AnimeFormat>,
+    /// The localized format of the anime
+    pub format_localized: Option<String>,
     /// The premiere season of the anime
     pub season: Option<AnimeSeason>,
+    /// The localized season of the anime
+    pub season_localized: Option<String>,
     /// The URL slug & route key of the resource
     pub slug: String,
     /// The brief summary of the anime
@@ -265,8 +270,11 @@ impl From<anime::Model> for Anime {
         let title = AnimeTitle::from(&model);
         Self {
             id: model.id,
+            name: title.romaji.clone(),
             format: model.format.map(Into::into),
+            format_localized: model.format.map(|f| format!("{:?}", f)),
             season: model.season.map(Into::into),
+            season_localized: model.season.map(|s| format!("{:?}", s)),
             slug: model.slug,
             synopsis: model.synopsis,
             title,

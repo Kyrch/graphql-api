@@ -31,7 +31,7 @@ impl From<&song::Model> for SongTitle {
 #[derive(SimpleObject)]
 #[graphql(complex)]
 pub struct Song {
-    #[graphql(skip)]
+    /// The primary key of the resource
     pub id: u64,
     /// The title of the composition
     pub title: SongTitle,

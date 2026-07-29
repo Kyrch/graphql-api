@@ -2,15 +2,18 @@ use async_graphql::{ComplexObject, Context, Enum, Result, SimpleObject, dataload
 
 use crate::{
     entities::content::animetheme::animetheme::{self, ThemeType as ThemeTypeEnum},
-    graphql::loaders::anime::{
-        anime_theme_entries::AnimeThemeEntriesLoader,
-        animetheme::{
-            animetheme_group::AnimeThemeGroupLoader, animetheme_song::AnimeThemeSongLoader,
+    graphql::{
+        loaders::anime::{
+            anime_theme_entries::AnimeThemeEntriesLoader,
+            animetheme::{
+                animetheme_anime::AnimeThemeAnimeLoader, animetheme_group::AnimeThemeGroupLoader,
+                animetheme_song::AnimeThemeSongLoader,
+            },
         },
-    },
-    graphql::types::content::{
-        animetheme::animethemeentry::animethemeentry::AnimeThemeEntry, song::Song,
-        themegroup::ThemeGroup,
+        types::content::{
+            anime::Anime, animetheme::animethemeentry::animethemeentry::AnimeThemeEntry,
+            song::Song, themegroup::ThemeGroup,
+        },
     },
 };
 
@@ -22,6 +25,8 @@ use crate::{
 pub struct AnimeTheme {
     /// The primary key of the resource
     pub id: u64,
+    #[graphql(skip)]
+    pub anime_id: u64,
     #[graphql(skip)]
     pub group_id: Option<u64>,
     /// The numeric ordering of the theme
@@ -36,6 +41,17 @@ pub struct AnimeTheme {
 
 #[ComplexObject]
 impl AnimeTheme {
+    async fn anime(&self, ctx: &Context<'_>) -> Result<Anime> {
+        let loader = ctx.data::<DataLoader<AnimeThemeAnimeLoader>>()?;
+
+        let anime = loader
+            .load_one(self.anime_id)
+            .await?
+            .ok_or("Anime not found")?;
+
+        Ok(anime.into())
+    }
+
     async fn animethemeentries(&self, ctx: &Context<'_>) -> Result<Vec<AnimeThemeEntry>> {
         let loader = ctx.data::<DataLoader<AnimeThemeEntriesLoader>>()?;
 
@@ -69,6 +85,7 @@ impl From<animetheme::Model> for AnimeTheme {
     fn from(model: animetheme::Model) -> Self {
         Self {
             id: model.id,
+            anime_id: model.anime_id,
             group_id: model.group_id,
             sequence: model.sequence,
             song_id: model.song_id,

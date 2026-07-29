@@ -56,7 +56,7 @@ impl From<VideoSourceEnum> for VideoSource {
 #[derive(SimpleObject)]
 #[graphql(complex)]
 pub struct Video {
-    #[graphql(skip)]
+    /// The primary key of the resource
     pub id: u64,
     #[graphql(skip)]
     pub audio_id: Option<u64>,
@@ -82,6 +82,7 @@ pub struct Video {
     pub source: Option<VideoSource>,
     /// Does the video include subtitles of dialogue?
     pub subbed: bool,
+    pub tags: String,
     /// Is the video an uncensored version of a censored sequence?
     pub uncen: bool,
 }
@@ -123,6 +124,7 @@ impl From<video::Model> for Video {
             size: model.size,
             source: model.source.map(Into::into),
             subbed: model.subbed,
+            tags: "".to_string(),
             uncen: model.uncen,
         }
     }

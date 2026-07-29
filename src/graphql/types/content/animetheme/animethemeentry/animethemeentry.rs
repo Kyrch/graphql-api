@@ -7,11 +7,17 @@ use async_graphql::{
 use crate::{
     entities::content::animetheme::animethemeentry::animethemeentry,
     graphql::{
-        loaders::anime::animetheme::animethemeentry::animethemeentry_videos::AnimeThemeEntryVideosLoader,
+        loaders::anime::animetheme::animethemeentry::{
+            animethemeentry_theme::AnimeThemeEntryThemeLoader,
+            animethemeentry_videos::AnimeThemeEntryVideosLoader,
+        },
         types::content::{
-            animetheme::animethemeentry::animethemeentry_video::{
-                AnimeThemeEntryVideoConnection, AnimeThemeEntryVideoEdge,
-                AnimeThemeEntryVideoEdgeFields,
+            animetheme::{
+                animetheme::AnimeTheme,
+                animethemeentry::animethemeentry_video::{
+                    AnimeThemeEntryVideoConnection, AnimeThemeEntryVideoEdge,
+                    AnimeThemeEntryVideoEdgeFields,
+                },
             },
             video::Video,
         },
@@ -24,8 +30,10 @@ use crate::{
 #[derive(SimpleObject)]
 #[graphql(complex)]
 pub struct AnimeThemeEntry {
-    #[graphql(skip)]
+    /// The primary key of the resource
     pub id: u64,
+    #[graphql(skip)]
+    pub theme_id: u64,
     /// The episodes that the theme is used for
     pub episodes: Option<String>,
     /// The number of likes recorded for the resource
@@ -44,6 +52,17 @@ pub struct AnimeThemeEntry {
 
 #[ComplexObject]
 impl AnimeThemeEntry {
+    async fn animetheme(&self, ctx: &Context<'_>) -> Result<AnimeTheme> {
+        let loader = ctx.data::<DataLoader<AnimeThemeEntryThemeLoader>>()?;
+
+        let theme = loader
+            .load_one(self.theme_id)
+            .await?
+            .ok_or("Theme not found")?;
+
+        Ok(theme.into())
+    }
+
     async fn videos(
         &self,
         ctx: &Context<'_>,
@@ -82,6 +101,7 @@ impl From<animethemeentry::Model> for AnimeThemeEntry {
     fn from(model: animethemeentry::Model) -> Self {
         Self {
             id: model.id,
+            theme_id: model.theme_id,
             episodes: model.episodes,
             likes_count: model.likes_count,
             notes: model.notes,

@@ -7,6 +7,8 @@ use crate::entities::content::audio;
 /// For example, the audio Bakemonogatari-OP1.ogg represents the audio track of the Bakemonogatari-OP1.webm video.
 #[derive(SimpleObject)]
 pub struct Audio {
+    /// The primary key of the resource
+    pub id: u64,
     /// The basename of the file in storage
     pub basename: String,
     /// The filename of the file in storage
@@ -22,6 +24,7 @@ pub struct Audio {
 impl From<audio::Model> for Audio {
     fn from(model: audio::Model) -> Self {
         Self {
+            id: model.id,
             basename: model.basename,
             filename: model.filename,
             mimetype: model.mimetype,

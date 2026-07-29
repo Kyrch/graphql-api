@@ -7,12 +7,17 @@ use crate::entities::content::videoscript;
 /// For example, the 2009/Summer/Bakemonogatari-OP1.txt video script represents the encoding script of the Bakemonogatari-OP1.webm video.
 #[derive(SimpleObject)]
 pub struct VideoScript {
+    /// The primary key of the resource
+    pub id: u64,
     /// The path of the file in storage
     pub path: String,
 }
 
 impl From<videoscript::Model> for VideoScript {
     fn from(model: videoscript::Model) -> Self {
-        Self { path: model.path }
+        Self {
+            id: model.id,
+            path: model.path,
+        }
     }
 }

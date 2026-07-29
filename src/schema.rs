@@ -15,12 +15,23 @@ use crate::graphql::{
             anime_theme_entries::AnimeThemeEntriesLoader,
             anime_themes::AnimeThemesLoader,
             animetheme::{
-                animetheme_group::AnimeThemeGroupLoader, animetheme_song::AnimeThemeSongLoader,
-                animethemeentry::animethemeentry_videos::AnimeThemeEntryVideosLoader,
+                animetheme_anime::AnimeThemeAnimeLoader,
+                animetheme_group::AnimeThemeGroupLoader,
+                animetheme_song::AnimeThemeSongLoader,
+                animethemeentry::{
+                    animethemeentry_theme::AnimeThemeEntryThemeLoader,
+                    animethemeentry_videos::AnimeThemeEntryVideosLoader,
+                },
             },
         },
         artist::artist_performances::ArtistPerformancesLoader,
         imageable::ImageableLoader,
+        list::playlist::{
+            playlist_track_first_last::PlaylistTrackFirstLastLoader,
+            playlist_tracks::PlaylistTracksLoader, playlist_user::PlaylistUserLoader,
+            track_entry::TrackEntryLoader, track_track::TrackTrackLoader,
+            track_video::TrackVideoLoader,
+        },
         performance::{
             performance_artist::PerformanceArtistLoader,
             performance_member::PerformanceMemberLoader, performance_song::PerformanceSongLoader,
@@ -40,6 +51,9 @@ pub fn create_schema(db: DatabaseConnection) -> AppSchema {
 
     let anime_themes_loader = DataLoader::new(AnimeThemesLoader { db: db.clone() }, tokio::spawn);
 
+    let animetheme_anime_loader =
+        DataLoader::new(AnimeThemeAnimeLoader { db: db.clone() }, tokio::spawn);
+
     let animetheme_song_loader =
         DataLoader::new(AnimeThemeSongLoader { db: db.clone() }, tokio::spawn);
 
@@ -48,6 +62,9 @@ pub fn create_schema(db: DatabaseConnection) -> AppSchema {
 
     let anime_theme_entries_loader =
         DataLoader::new(AnimeThemeEntriesLoader { db: db.clone() }, tokio::spawn);
+
+    let anime_theme_entry_theme_loader =
+        DataLoader::new(AnimeThemeEntryThemeLoader { db: db.clone() }, tokio::spawn);
 
     let anime_theme_entry_videos_loader =
         DataLoader::new(AnimeThemeEntryVideosLoader { db: db.clone() }, tokio::spawn);
@@ -79,13 +96,31 @@ pub fn create_schema(db: DatabaseConnection) -> AppSchema {
 
     let resourceable_loader = DataLoader::new(ResourceableLoader { db: db.clone() }, tokio::spawn);
 
+    let playlist_user_loader = DataLoader::new(PlaylistUserLoader { db: db.clone() }, tokio::spawn);
+
+    let playlist_tracks_loader =
+        DataLoader::new(PlaylistTracksLoader { db: db.clone() }, tokio::spawn);
+
+    let playlist_track_first_last_loader = DataLoader::new(
+        PlaylistTrackFirstLastLoader { db: db.clone() },
+        tokio::spawn,
+    );
+
+    let track_entry_loader = DataLoader::new(TrackEntryLoader { db: db.clone() }, tokio::spawn);
+
+    let track_video_loader = DataLoader::new(TrackVideoLoader { db: db.clone() }, tokio::spawn);
+
+    let track_track_loader = DataLoader::new(TrackTrackLoader { db: db.clone() }, tokio::spawn);
+
     Schema::build(Query, EmptyMutation, EmptySubscription)
         .data(db)
         .data(anime_synonyms_loader)
         .data(anime_themes_loader)
+        .data(animetheme_anime_loader)
         .data(animetheme_song_loader)
         .data(animetheme_group_loader)
         .data(anime_theme_entries_loader)
+        .data(anime_theme_entry_theme_loader)
         .data(anime_theme_entry_videos_loader)
         .data(anime_series_loader)
         .data(anime_studios_loader)
@@ -98,6 +133,12 @@ pub fn create_schema(db: DatabaseConnection) -> AppSchema {
         .data(video_script_loader)
         .data(imageable_loader)
         .data(resourceable_loader)
+        .data(playlist_user_loader)
+        .data(playlist_tracks_loader)
+        .data(playlist_track_first_last_loader)
+        .data(track_entry_loader)
+        .data(track_video_loader)
+        .data(track_track_loader)
         .finish()
 }
 

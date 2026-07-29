@@ -24,7 +24,7 @@ use crate::{
 #[derive(SimpleObject)]
 #[graphql(complex)]
 pub struct Studio {
-    #[graphql(skip)]
+    /// The primary key of the resource
     pub id: u64,
     /// The primary title of the Studio
     pub name: String,
