@@ -9,11 +9,12 @@ use crate::{
     graphql::{
         loaders::{
             artist::artist_performances::ArtistPerformancesLoader,
+            imageable::{ImageableKey, ImageableLoader},
             resourceable::{ResourceableKey, ResourceableLoader},
         },
         types::content::{
-            externalresource::ExternalResource, performance::Performance,
-            resourceable::ExternalResourceEdgeFields,
+            externalresource::ExternalResource, image::Image, imageable::ImageEdgeFields,
+            performance::Performance, resourceable::ExternalResourceEdgeFields,
         },
     },
 };
@@ -59,6 +60,37 @@ impl Artist {
         let models = loader.load_one(self.id).await?.unwrap_or_default();
 
         Ok(models.into_iter().map(Performance::from).collect())
+    }
+
+    async fn images(
+        &self,
+        ctx: &Context<'_>,
+    ) -> Result<Connection<u64, Image, EmptyFields, ImageEdgeFields>> {
+        let loader = ctx.data::<DataLoader<ImageableLoader>>()?;
+
+        let rows = loader
+            .load_one(ImageableKey {
+                id: self.id,
+                imageable_type: "artist".to_string(),
+            })
+            .await?
+            .unwrap_or_default();
+
+        let mut connection = Connection::with_additional_fields(false, false, EmptyFields);
+
+        for (pivot, image) in rows {
+            connection.edges.push(Edge::with_additional_fields(
+                image.id,
+                image.into(),
+                ImageEdgeFields {
+                    depth: pivot.depth,
+                    created_at: pivot.created_at,
+                    updated_at: pivot.updated_at,
+                },
+            ));
+        }
+
+        Ok(connection)
     }
 
     async fn resources(

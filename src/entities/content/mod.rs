@@ -5,6 +5,8 @@ pub mod animethemeentry_videos;
 pub mod artist;
 pub mod audio;
 pub mod externalresource;
+pub mod image;
+pub mod imageable;
 pub mod performance;
 pub mod resourceable;
 pub mod series;

@@ -14,12 +14,15 @@ use crate::{
                 anime_series::AnimeSeriesLoader, anime_synonyms::AnimeSynonymsLoader,
                 anime_themes::AnimeThemesLoader,
             },
+            imageable::{ImageableKey, ImageableLoader},
             resourceable::{ResourceableKey, ResourceableLoader},
         },
         types::content::{
             anime_series::{AnimeSeriesConnection, AnimeSeriesEdge, AnimeSeriesEdgeFields},
             animetheme::animetheme::AnimeTheme,
             externalresource::ExternalResource,
+            image::Image,
+            imageable::ImageEdgeFields,
             resourceable::ExternalResourceEdgeFields,
             series::Series,
             synonym::Synonym,
@@ -124,6 +127,37 @@ impl Anime {
         let models = loader.load_one(self.id).await?.unwrap_or_default();
 
         Ok(models.into_iter().map(AnimeTheme::from).collect())
+    }
+
+    async fn images(
+        &self,
+        ctx: &Context<'_>,
+    ) -> Result<Connection<u64, Image, EmptyFields, ImageEdgeFields>> {
+        let loader = ctx.data::<DataLoader<ImageableLoader>>()?;
+
+        let rows = loader
+            .load_one(ImageableKey {
+                id: self.id,
+                imageable_type: "anime".to_string(),
+            })
+            .await?
+            .unwrap_or_default();
+
+        let mut connection = Connection::with_additional_fields(false, false, EmptyFields);
+
+        for (pivot, image) in rows {
+            connection.edges.push(Edge::with_additional_fields(
+                image.id,
+                image.into(),
+                ImageEdgeFields {
+                    depth: pivot.depth,
+                    created_at: pivot.created_at,
+                    updated_at: pivot.updated_at,
+                },
+            ));
+        }
+
+        Ok(connection)
     }
 
     async fn resources(
