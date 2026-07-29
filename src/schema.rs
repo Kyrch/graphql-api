@@ -1,144 +1,17 @@
-use async_graphql::{
-    EmptyMutation, EmptySubscription, Schema, dataloader::DataLoader, http::GraphiQLSource,
-};
+use async_graphql::{EmptyMutation, EmptySubscription, Schema, http::GraphiQLSource};
 
 use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
 use axum::{extract::State, response::Html};
 use sea_orm::DatabaseConnection;
 
-use crate::graphql::{
-    loaders::{
-        content::anime::{
-            anime_series::AnimeSeriesLoader,
-            anime_studios::AnimeStudiosLoader,
-            anime_synonyms::AnimeSynonymsLoader,
-            anime_theme_entries::AnimeThemeEntriesLoader,
-            anime_themes::AnimeThemesLoader,
-            animetheme::{
-                animetheme_anime::AnimeThemeAnimeLoader,
-                animetheme_group::AnimeThemeGroupLoader,
-                animetheme_song::AnimeThemeSongLoader,
-                animethemeentry::{
-                    animethemeentry_theme::AnimeThemeEntryThemeLoader,
-                    animethemeentry_videos::AnimeThemeEntryVideosLoader,
-                },
-            },
-        },
-        content::artist::artist_performances::ArtistPerformancesLoader,
-        content::imageable::ImageableLoader,
-        content::performance::{
-            performance_artist::PerformanceArtistLoader,
-            performance_member::PerformanceMemberLoader, performance_song::PerformanceSongLoader,
-        },
-        content::resourceable::ResourceableLoader,
-        content::song::song_performances::SongPerformancesLoader,
-        content::video::{video_audio::VideoAudioLoader, video_script::VideoScriptLoader},
-        list::playlist::{
-            playlist_track_first_last::PlaylistTrackFirstLastLoader,
-            playlist_tracks::PlaylistTracksLoader, playlist_user::PlaylistUserLoader,
-            track_entry::TrackEntryLoader, track_track::TrackTrackLoader,
-            track_video::TrackVideoLoader,
-        },
-    },
-    query::Query,
-};
+use crate::graphql::{loaders::loaders::RegisterLoaders, query::Query};
 
 pub type AppSchema = Schema<Query, EmptyMutation, EmptySubscription>;
 
 pub fn create_schema(db: DatabaseConnection) -> AppSchema {
-    let anime_synonyms_loader =
-        DataLoader::new(AnimeSynonymsLoader { db: db.clone() }, tokio::spawn);
-
-    let anime_themes_loader = DataLoader::new(AnimeThemesLoader { db: db.clone() }, tokio::spawn);
-
-    let animetheme_anime_loader =
-        DataLoader::new(AnimeThemeAnimeLoader { db: db.clone() }, tokio::spawn);
-
-    let animetheme_song_loader =
-        DataLoader::new(AnimeThemeSongLoader { db: db.clone() }, tokio::spawn);
-
-    let animetheme_group_loader =
-        DataLoader::new(AnimeThemeGroupLoader { db: db.clone() }, tokio::spawn);
-
-    let anime_theme_entries_loader =
-        DataLoader::new(AnimeThemeEntriesLoader { db: db.clone() }, tokio::spawn);
-
-    let anime_theme_entry_theme_loader =
-        DataLoader::new(AnimeThemeEntryThemeLoader { db: db.clone() }, tokio::spawn);
-
-    let anime_theme_entry_videos_loader =
-        DataLoader::new(AnimeThemeEntryVideosLoader { db: db.clone() }, tokio::spawn);
-
-    let anime_series_loader = DataLoader::new(AnimeSeriesLoader { db: db.clone() }, tokio::spawn);
-
-    let anime_studios_loader = DataLoader::new(AnimeStudiosLoader { db: db.clone() }, tokio::spawn);
-
-    let artist_performances_loader =
-        DataLoader::new(ArtistPerformancesLoader { db: db.clone() }, tokio::spawn);
-
-    let song_performances_loader =
-        DataLoader::new(SongPerformancesLoader { db: db.clone() }, tokio::spawn);
-
-    let performance_artist_loader =
-        DataLoader::new(PerformanceArtistLoader { db: db.clone() }, tokio::spawn);
-
-    let performance_member_loader =
-        DataLoader::new(PerformanceMemberLoader { db: db.clone() }, tokio::spawn);
-
-    let performance_song_loader =
-        DataLoader::new(PerformanceSongLoader { db: db.clone() }, tokio::spawn);
-
-    let video_audio_loader = DataLoader::new(VideoAudioLoader { db: db.clone() }, tokio::spawn);
-
-    let video_script_loader = DataLoader::new(VideoScriptLoader { db: db.clone() }, tokio::spawn);
-
-    let imageable_loader = DataLoader::new(ImageableLoader { db: db.clone() }, tokio::spawn);
-
-    let resourceable_loader = DataLoader::new(ResourceableLoader { db: db.clone() }, tokio::spawn);
-
-    let playlist_user_loader = DataLoader::new(PlaylistUserLoader { db: db.clone() }, tokio::spawn);
-
-    let playlist_tracks_loader =
-        DataLoader::new(PlaylistTracksLoader { db: db.clone() }, tokio::spawn);
-
-    let playlist_track_first_last_loader = DataLoader::new(
-        PlaylistTrackFirstLastLoader { db: db.clone() },
-        tokio::spawn,
-    );
-
-    let track_entry_loader = DataLoader::new(TrackEntryLoader { db: db.clone() }, tokio::spawn);
-
-    let track_video_loader = DataLoader::new(TrackVideoLoader { db: db.clone() }, tokio::spawn);
-
-    let track_track_loader = DataLoader::new(TrackTrackLoader { db: db.clone() }, tokio::spawn);
-
     Schema::build(Query, EmptyMutation, EmptySubscription)
-        .data(db)
-        .data(anime_synonyms_loader)
-        .data(anime_themes_loader)
-        .data(animetheme_anime_loader)
-        .data(animetheme_song_loader)
-        .data(animetheme_group_loader)
-        .data(anime_theme_entries_loader)
-        .data(anime_theme_entry_theme_loader)
-        .data(anime_theme_entry_videos_loader)
-        .data(anime_series_loader)
-        .data(anime_studios_loader)
-        .data(artist_performances_loader)
-        .data(song_performances_loader)
-        .data(performance_artist_loader)
-        .data(performance_member_loader)
-        .data(performance_song_loader)
-        .data(video_audio_loader)
-        .data(video_script_loader)
-        .data(imageable_loader)
-        .data(resourceable_loader)
-        .data(playlist_user_loader)
-        .data(playlist_tracks_loader)
-        .data(playlist_track_first_last_loader)
-        .data(track_entry_loader)
-        .data(track_video_loader)
-        .data(track_track_loader)
+        .data(db.clone())
+        .register_loaders(db)
         .finish()
 }
 

@@ -1,0 +1,79 @@
+use async_graphql::{EmptyMutation, EmptySubscription, SchemaBuilder, dataloader::DataLoader};
+use sea_orm::DatabaseConnection;
+
+use crate::graphql::loaders::{
+    content::{
+        anime::{
+            anime_series::AnimeSeriesLoader,
+            anime_studios::AnimeStudiosLoader,
+            anime_synonyms::AnimeSynonymsLoader,
+            anime_theme_entries::AnimeThemeEntriesLoader,
+            anime_themes::AnimeThemesLoader,
+            animetheme::{
+                animetheme_anime::AnimeThemeAnimeLoader,
+                animetheme_group::AnimeThemeGroupLoader,
+                animetheme_song::AnimeThemeSongLoader,
+                animethemeentry::{
+                    animethemeentry_theme::AnimeThemeEntryThemeLoader,
+                    animethemeentry_videos::AnimeThemeEntryVideosLoader,
+                },
+            },
+        },
+        artist::artist_performances::ArtistPerformancesLoader,
+        imageable::ImageableLoader,
+        performance::{
+            performance_artist::PerformanceArtistLoader,
+            performance_member::PerformanceMemberLoader, performance_song::PerformanceSongLoader,
+        },
+        resourceable::ResourceableLoader,
+        song::song_performances::SongPerformancesLoader,
+        video::{video_audio::VideoAudioLoader, video_script::VideoScriptLoader},
+    },
+    list::playlist::{
+        playlist_track_first_last::PlaylistTrackFirstLastLoader,
+        playlist_tracks::PlaylistTracksLoader, playlist_user::PlaylistUserLoader,
+        track_entry::TrackEntryLoader, track_track::TrackTrackLoader,
+        track_video::TrackVideoLoader,
+    },
+};
+
+fn loader<L>(loader: L) -> DataLoader<L>
+where
+    L: Send + Sync + 'static,
+{
+    DataLoader::new(loader, tokio::spawn)
+}
+
+pub trait RegisterLoaders {
+    fn register_loaders(self, db: DatabaseConnection) -> Self;
+}
+
+impl<Query> RegisterLoaders for SchemaBuilder<Query, EmptyMutation, EmptySubscription> {
+    fn register_loaders(self, db: DatabaseConnection) -> Self {
+        self.data(loader(AnimeSynonymsLoader { db: db.clone() }))
+            .data(loader(AnimeThemesLoader { db: db.clone() }))
+            .data(loader(AnimeThemeAnimeLoader { db: db.clone() }))
+            .data(loader(AnimeThemeSongLoader { db: db.clone() }))
+            .data(loader(AnimeThemeGroupLoader { db: db.clone() }))
+            .data(loader(AnimeThemeEntriesLoader { db: db.clone() }))
+            .data(loader(AnimeThemeEntryThemeLoader { db: db.clone() }))
+            .data(loader(AnimeThemeEntryVideosLoader { db: db.clone() }))
+            .data(loader(AnimeSeriesLoader { db: db.clone() }))
+            .data(loader(AnimeStudiosLoader { db: db.clone() }))
+            .data(loader(ArtistPerformancesLoader { db: db.clone() }))
+            .data(loader(SongPerformancesLoader { db: db.clone() }))
+            .data(loader(PerformanceArtistLoader { db: db.clone() }))
+            .data(loader(PerformanceMemberLoader { db: db.clone() }))
+            .data(loader(PerformanceSongLoader { db: db.clone() }))
+            .data(loader(VideoAudioLoader { db: db.clone() }))
+            .data(loader(VideoScriptLoader { db: db.clone() }))
+            .data(loader(ImageableLoader { db: db.clone() }))
+            .data(loader(ResourceableLoader { db: db.clone() }))
+            .data(loader(PlaylistUserLoader { db: db.clone() }))
+            .data(loader(PlaylistTracksLoader { db: db.clone() }))
+            .data(loader(PlaylistTrackFirstLastLoader { db: db.clone() }))
+            .data(loader(TrackEntryLoader { db: db.clone() }))
+            .data(loader(TrackVideoLoader { db: db.clone() }))
+            .data(loader(TrackTrackLoader { db: db.clone() }))
+    }
+}
