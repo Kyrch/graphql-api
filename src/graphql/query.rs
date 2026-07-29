@@ -4,12 +4,14 @@ use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 
 use crate::{
     entities::{
+        admin::featuredtheme,
         auth::user,
         content::{anime, artist, series, studio},
         document::page,
         list::playlist,
     },
     graphql::types::{
+        admin::featuredtheme::FeaturedTheme,
         auth::me::Me,
         content::{anime::Anime, artist::Artist, series::Series, studio::Studio},
         document::page::Page,
@@ -21,6 +23,18 @@ pub struct Query;
 
 #[Object]
 impl Query {
+    async fn current_featured_theme(&self, ctx: &Context<'_>) -> Result<Option<FeaturedTheme>> {
+        let db = ctx.data::<DatabaseConnection>()?;
+
+        let featured_theme = featuredtheme::Entity::find()
+            .filter(featuredtheme::Column::StartAt.lte(chrono::Utc::now()))
+            .filter(featuredtheme::Column::EndAt.gte(chrono::Utc::now()))
+            .one(db)
+            .await?;
+
+        Ok(featured_theme.map(|f| f.into()))
+    }
+
     async fn me(&self, ctx: &Context<'_>) -> Result<Option<Me>> {
         let db = ctx.data::<DatabaseConnection>()?;
 

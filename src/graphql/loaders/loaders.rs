@@ -2,6 +2,10 @@ use async_graphql::{EmptyMutation, EmptySubscription, SchemaBuilder, dataloader:
 use sea_orm::DatabaseConnection;
 
 use crate::graphql::loaders::{
+    admin::{
+        featuredtheme_entry::FeaturedThemeEntryLoader, featuredtheme_user::FeaturedThemeUserLoader,
+        featuredtheme_video::FeaturedThemeVideoLoader,
+    },
     content::{
         anime::{
             anime_series::AnimeSeriesLoader,
@@ -51,7 +55,10 @@ pub trait RegisterLoaders {
 
 impl<Query> RegisterLoaders for SchemaBuilder<Query, EmptyMutation, EmptySubscription> {
     fn register_loaders(self, db: DatabaseConnection) -> Self {
-        self.data(loader(AnimeSynonymsLoader { db: db.clone() }))
+        self.data(loader(FeaturedThemeEntryLoader { db: db.clone() }))
+            .data(loader(FeaturedThemeUserLoader { db: db.clone() }))
+            .data(loader(FeaturedThemeVideoLoader { db: db.clone() }))
+            .data(loader(AnimeSynonymsLoader { db: db.clone() }))
             .data(loader(AnimeThemesLoader { db: db.clone() }))
             .data(loader(AnimeThemeAnimeLoader { db: db.clone() }))
             .data(loader(AnimeThemeSongLoader { db: db.clone() }))
