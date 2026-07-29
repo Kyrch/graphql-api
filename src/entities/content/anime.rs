@@ -1,6 +1,8 @@
 use sea_orm::entity::prelude::*;
 
-use crate::entities::content::{anime_series, animetheme::animetheme, series, synonym};
+use crate::entities::content::{
+    anime_series, anime_studios, animetheme::animetheme, series, studio, synonym,
+};
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "anime")]
@@ -30,6 +32,9 @@ pub enum Relation {
 
     #[sea_orm(has_many = "anime_series::Entity")]
     AnimeSeries,
+
+    #[sea_orm(has_many = "anime_studios::Entity")]
+    AnimeStudio,
 }
 
 impl Related<synonym::Entity> for Entity {
@@ -51,6 +56,16 @@ impl Related<series::Entity> for Entity {
 
     fn via() -> Option<RelationDef> {
         Some(anime_series::Relation::Anime.def().rev())
+    }
+}
+
+impl Related<studio::Entity> for Entity {
+    fn to() -> RelationDef {
+        anime_studios::Relation::Studio.def()
+    }
+
+    fn via() -> Option<RelationDef> {
+        Some(anime_studios::Relation::Anime.def().rev())
     }
 }
 

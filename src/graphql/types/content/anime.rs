@@ -11,20 +11,22 @@ use crate::{
     graphql::{
         loaders::{
             anime::{
-                anime_series::AnimeSeriesLoader, anime_synonyms::AnimeSynonymsLoader,
-                anime_themes::AnimeThemesLoader,
+                anime_series::AnimeSeriesLoader, anime_studios::AnimeStudiosLoader,
+                anime_synonyms::AnimeSynonymsLoader, anime_themes::AnimeThemesLoader,
             },
             imageable::{ImageableKey, ImageableLoader},
             resourceable::{ResourceableKey, ResourceableLoader},
         },
         types::content::{
             anime_series::{AnimeSeriesConnection, AnimeSeriesEdge, AnimeSeriesEdgeFields},
+            anime_studios::{AnimeStudioConnection, AnimeStudioEdge, AnimeStudioEdgeFields},
             animetheme::animetheme::AnimeTheme,
             externalresource::ExternalResource,
             image::Image,
             imageable::ImageEdgeFields,
             resourceable::ExternalResourceEdgeFields,
             series::Series,
+            studio::Studio,
             synonym::Synonym,
         },
     },
@@ -215,6 +217,39 @@ impl Anime {
                 series.id,
                 series.into(),
                 AnimeSeriesEdgeFields {
+                    created_at: pivot.created_at,
+                    updated_at: pivot.updated_at,
+                },
+            ));
+        }
+
+        Ok(connection)
+    }
+
+    async fn studios(
+        &self,
+        ctx: &Context<'_>,
+    ) -> Result<
+        Connection<
+            u64,
+            Studio,
+            EmptyFields,
+            AnimeStudioEdgeFields,
+            AnimeStudioConnection,
+            AnimeStudioEdge,
+        >,
+    > {
+        let loader = ctx.data::<DataLoader<AnimeStudiosLoader>>()?;
+
+        let rows = loader.load_one(self.id).await?.unwrap_or_default();
+
+        let mut connection = Connection::with_additional_fields(false, false, EmptyFields);
+
+        for (pivot, studio) in rows {
+            connection.edges.push(Edge::with_additional_fields(
+                studio.id,
+                studio.into(),
+                AnimeStudioEdgeFields {
                     created_at: pivot.created_at,
                     updated_at: pivot.updated_at,
                 },
