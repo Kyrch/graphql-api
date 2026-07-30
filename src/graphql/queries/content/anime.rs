@@ -10,11 +10,13 @@ use crate::{
         inputs::pagination_input::PaginationInput, types::content::anime::Anime,
         utils::cursor_paginate,
     },
+    scopes::content::anime::{anime_by_title_like, anime_by_year},
 };
 
 #[derive(InputObject, Default)]
 struct AnimeFilterInput {
-    title: Option<String>,
+    title_like: Option<String>,
+    year: Option<i32>,
 }
 
 #[derive(Default)]
@@ -43,8 +45,12 @@ impl AnimeQuery {
 
         let filter = filter.unwrap_or_default();
 
-        if let Some(title) = filter.title {
-            query = query.filter(anime::Column::Title.like(title))
+        if let Some(title_like) = filter.title_like {
+            query = query.filter(anime_by_title_like(title_like))
+        }
+
+        if let Some(year) = filter.year {
+            query = query.filter(anime_by_year(year))
         }
 
         cursor_paginate(

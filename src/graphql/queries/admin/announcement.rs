@@ -2,7 +2,7 @@ use async_graphql::{
     Context, Object, Result,
     connection::{Connection, EmptyFields},
 };
-use sea_orm::{ColumnTrait, EntityTrait, QueryFilter};
+use sea_orm::{EntityTrait, QueryFilter};
 
 use crate::{
     entities::admin::announcement,
@@ -10,6 +10,7 @@ use crate::{
         inputs::pagination_input::PaginationInput, types::admin::announcement::Announcement,
         utils::cursor_paginate,
     },
+    scopes::admin::announcement::current_announcement,
 };
 
 #[derive(Default)]
@@ -22,9 +23,7 @@ impl AnnouncementQuery {
         ctx: &Context<'_>,
         pagination: Option<PaginationInput>,
     ) -> Result<Connection<u64, Announcement, EmptyFields, EmptyFields>> {
-        let query = announcement::Entity::find()
-            .filter(announcement::Column::StartAt.lte(chrono::Utc::now()))
-            .filter(announcement::Column::EndAt.gte(chrono::Utc::now()));
+        let query = announcement::Entity::find().filter(current_announcement());
 
         cursor_paginate(
             query,

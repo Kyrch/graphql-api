@@ -3,6 +3,7 @@ mod entities;
 mod enums;
 mod graphql;
 mod schema;
+mod scopes;
 
 use axum::{Router, routing::get};
 

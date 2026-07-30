@@ -1,7 +1,10 @@
 use async_graphql::{Context, Object, Result};
-use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
+use sea_orm::{DatabaseConnection, EntityTrait, QueryFilter};
 
-use crate::{entities::admin::featuredtheme, graphql::types::admin::featuredtheme::FeaturedTheme};
+use crate::{
+    entities::admin::featuredtheme, graphql::types::admin::featuredtheme::FeaturedTheme,
+    scopes::admin::featuredtheme::current_featured_theme,
+};
 
 #[derive(Default)]
 pub struct FeaturedThemeQuery;
@@ -12,8 +15,7 @@ impl FeaturedThemeQuery {
         let db = ctx.data::<DatabaseConnection>()?;
 
         let featured_theme = featuredtheme::Entity::find()
-            .filter(featuredtheme::Column::StartAt.lte(chrono::Utc::now()))
-            .filter(featuredtheme::Column::EndAt.gte(chrono::Utc::now()))
+            .filter(current_featured_theme())
             .one(db)
             .await?;
 
