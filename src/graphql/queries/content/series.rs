@@ -1,9 +1,22 @@
-use async_graphql::{Context, Object, Result};
+use async_graphql::{
+    Context, InputObject, Object, Result,
+    connection::{Connection, EmptyFields},
+};
 use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 
 use crate::{
-    entities::content::series, graphql::types::content::series::Series, scopes::without_trashed,
+    entities::content::series,
+    graphql::{
+        inputs::pagination_input::PaginationInput, types::content::series::Series,
+        utils::cursor_paginate,
+    },
+    scopes::without_trashed,
 };
+
+#[derive(InputObject, Default)]
+struct SeriesFilterInput {
+    title_romaji_like: Option<String>,
+}
 
 #[derive(Default)]
 pub struct SeriesQuery;
@@ -20,5 +33,29 @@ impl SeriesQuery {
             .await?;
 
         Ok(series.map(|a| a.into()))
+    }
+
+    async fn series_connection(
+        &self,
+        ctx: &Context<'_>,
+        pagination: Option<PaginationInput>,
+        filter: Option<SeriesFilterInput>,
+    ) -> Result<Connection<u64, Series, EmptyFields, EmptyFields>> {
+        let mut query = series::Entity::find().filter(without_trashed::<series::Entity>());
+
+        let filter = filter.unwrap_or_default();
+
+        if let Some(title_romaji_like) = filter.title_romaji_like {
+            query = query.filter(series::Column::Title.like(title_romaji_like))
+        }
+
+        cursor_paginate(
+            query,
+            ctx,
+            series::Column::Id,
+            pagination,
+            |model: &series::Model| model.id,
+        )
+        .await
     }
 }

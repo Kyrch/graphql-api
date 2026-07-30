@@ -1,9 +1,22 @@
-use async_graphql::{Context, Object, Result};
+use async_graphql::{
+    Context, InputObject, Object, Result,
+    connection::{Connection, EmptyFields},
+};
 use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 
 use crate::{
-    entities::content::studio, graphql::types::content::studio::Studio, scopes::without_trashed,
+    entities::content::studio,
+    graphql::{
+        inputs::pagination_input::PaginationInput, types::content::studio::Studio,
+        utils::cursor_paginate,
+    },
+    scopes::without_trashed,
 };
+
+#[derive(InputObject, Default)]
+struct StudioFilterInput {
+    name_like: Option<String>,
+}
 
 #[derive(Default)]
 pub struct StudioQuery;
@@ -20,5 +33,29 @@ impl StudioQuery {
             .await?;
 
         Ok(studio.map(|a| a.into()))
+    }
+
+    async fn studio_connection(
+        &self,
+        ctx: &Context<'_>,
+        pagination: Option<PaginationInput>,
+        filter: Option<StudioFilterInput>,
+    ) -> Result<Connection<u64, Studio, EmptyFields, EmptyFields>> {
+        let mut query = studio::Entity::find().filter(without_trashed::<studio::Entity>());
+
+        let filter = filter.unwrap_or_default();
+
+        if let Some(name_like) = filter.name_like {
+            query = query.filter(studio::Column::Name.like(name_like))
+        }
+
+        cursor_paginate(
+            query,
+            ctx,
+            studio::Column::Id,
+            pagination,
+            |model: &studio::Model| model.id,
+        )
+        .await
     }
 }
