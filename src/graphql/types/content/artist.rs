@@ -15,9 +15,9 @@ use crate::{
         types::content::{
             externalresource::ExternalResource,
             image::Image,
-            imageable::{ImageEdgeFields, ImageableConnection, ImageableEdge},
+            imageable::{ImageableConnection, ImageableEdge, ImageableEdgeFields},
             performance::Performance,
-            resourceable::{ExternalResourceEdgeFields, ResourceableConnection, ResourceableEdge},
+            resourceable::{ResourceableConnection, ResourceableEdge, ResourceableEdgeFields},
         },
     },
 };
@@ -69,7 +69,14 @@ impl Artist {
         &self,
         ctx: &Context<'_>,
     ) -> Result<
-        Connection<u64, Image, EmptyFields, ImageEdgeFields, ImageableConnection, ImageableEdge>,
+        Connection<
+            u64,
+            Image,
+            EmptyFields,
+            ImageableEdgeFields,
+            ImageableConnection,
+            ImageableEdge,
+        >,
     > {
         let loader = ctx.data::<DataLoader<ImageableLoader>>()?;
 
@@ -87,7 +94,7 @@ impl Artist {
             connection.edges.push(Edge::with_additional_fields(
                 image.id,
                 image.into(),
-                ImageEdgeFields {
+                ImageableEdgeFields {
                     depth: pivot.depth,
                     created_at: pivot.created_at,
                     updated_at: pivot.updated_at,
@@ -106,7 +113,7 @@ impl Artist {
             u64,
             ExternalResource,
             EmptyFields,
-            ExternalResourceEdgeFields,
+            ResourceableEdgeFields,
             ResourceableConnection,
             ResourceableEdge,
         >,
@@ -127,7 +134,7 @@ impl Artist {
             connection.edges.push(Edge::with_additional_fields(
                 resource.id,
                 resource.into(),
-                ExternalResourceEdgeFields {
+                ResourceableEdgeFields {
                     r#as: pivot.r#as,
                     created_at: pivot.created_at,
                     updated_at: pivot.updated_at,

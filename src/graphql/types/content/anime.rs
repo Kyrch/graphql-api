@@ -22,8 +22,8 @@ use crate::{
             animetheme::animetheme::AnimeTheme,
             externalresource::ExternalResource,
             image::Image,
-            imageable::{ImageEdgeFields, ImageableConnection, ImageableEdge},
-            resourceable::{ExternalResourceEdgeFields, ResourceableConnection, ResourceableEdge},
+            imageable::{ImageableConnection, ImageableEdge, ImageableEdgeFields},
+            resourceable::{ResourceableConnection, ResourceableEdge, ResourceableEdgeFields},
             series::Series,
             studio::Studio,
             synonym::Synonym,
@@ -96,7 +96,14 @@ impl Anime {
         &self,
         ctx: &Context<'_>,
     ) -> Result<
-        Connection<u64, Image, EmptyFields, ImageEdgeFields, ImageableConnection, ImageableEdge>,
+        Connection<
+            u64,
+            Image,
+            EmptyFields,
+            ImageableEdgeFields,
+            ImageableConnection,
+            ImageableEdge,
+        >,
     > {
         let loader = ctx.data::<DataLoader<ImageableLoader>>()?;
 
@@ -114,7 +121,7 @@ impl Anime {
             connection.edges.push(Edge::with_additional_fields(
                 image.id,
                 image.into(),
-                ImageEdgeFields {
+                ImageableEdgeFields {
                     depth: pivot.depth,
                     created_at: pivot.created_at,
                     updated_at: pivot.updated_at,
@@ -133,7 +140,7 @@ impl Anime {
             u64,
             ExternalResource,
             EmptyFields,
-            ExternalResourceEdgeFields,
+            ResourceableEdgeFields,
             ResourceableConnection,
             ResourceableEdge,
         >,
@@ -154,7 +161,7 @@ impl Anime {
             connection.edges.push(Edge::with_additional_fields(
                 resource.id,
                 resource.into(),
-                ExternalResourceEdgeFields {
+                ResourceableEdgeFields {
                     r#as: pivot.r#as,
                     created_at: pivot.created_at,
                     updated_at: pivot.updated_at,

@@ -8,7 +8,7 @@ use crate::graphql::utils::format_datetime;
 
 #[derive(SimpleObject)]
 #[graphql(complex)]
-pub struct ImageEdgeFields {
+pub struct ImageableEdgeFields {
     /// Used to sort the images
     pub depth: i32,
 
@@ -20,7 +20,7 @@ pub struct ImageEdgeFields {
 }
 
 #[ComplexObject]
-impl ImageEdgeFields {
+impl ImageableEdgeFields {
     /// The date that the resource was created
     async fn created_at(&self, #[graphql(default = "%+")] format: String) -> Option<String> {
         format_datetime(self.created_at.as_ref(), &format)
