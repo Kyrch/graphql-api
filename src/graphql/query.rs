@@ -1,4 +1,7 @@
-use async_graphql::{Context, Object, Result};
+use async_graphql::{
+    Context, InputObject, Object, Result,
+    connection::{Connection, EmptyFields},
+};
 
 use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 
@@ -10,14 +13,23 @@ use crate::{
         document::page,
         list::playlist,
     },
-    graphql::types::{
-        admin::featuredtheme::FeaturedTheme,
-        auth::me::Me,
-        content::{anime::Anime, artist::Artist, series::Series, studio::Studio},
-        document::page::Page,
-        list::playlist::Playlist,
+    graphql::{
+        inputs::pagination_input::PaginationInput,
+        types::{
+            admin::featuredtheme::FeaturedTheme,
+            auth::me::Me,
+            content::{anime::Anime, artist::Artist, series::Series, studio::Studio},
+            document::page::Page,
+            list::playlist::Playlist,
+        },
+        utils::cursor_paginate,
     },
 };
+
+#[derive(InputObject, Default)]
+struct AnimeFilterInput {
+    title: Option<String>,
+}
 
 pub struct Query;
 
@@ -109,11 +121,27 @@ impl Query {
         Ok(studio.map(|a| a.into()))
     }
 
-    async fn anime_all(&self, ctx: &Context<'_>) -> Result<Vec<Anime>> {
-        let db = ctx.data::<DatabaseConnection>()?;
+    async fn anime_connection(
+        &self,
+        ctx: &Context<'_>,
+        pagination: Option<PaginationInput>,
+        filter: Option<AnimeFilterInput>,
+    ) -> Result<Connection<u64, Anime, EmptyFields, EmptyFields>> {
+        let mut query = anime::Entity::find();
 
-        let anime = anime::Entity::find().all(db).await?;
+        let filter = filter.unwrap_or_default();
 
-        Ok(anime.into_iter().map(Into::into).collect())
+        if let Some(title) = filter.title {
+            query = query.filter(anime::Column::Title.like(title))
+        }
+
+        cursor_paginate(
+            query,
+            ctx,
+            anime::Column::Id,
+            pagination,
+            |model: &anime::Model| model.id,
+        )
+        .await
     }
 }
