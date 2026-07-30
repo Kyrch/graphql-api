@@ -1,7 +1,9 @@
 use async_graphql::{Context, Object, Result};
 use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 
-use crate::{entities::content::studio, graphql::types::content::studio::Studio};
+use crate::{
+    entities::content::studio, graphql::types::content::studio::Studio, scopes::without_trashed,
+};
 
 #[derive(Default)]
 pub struct StudioQuery;
@@ -12,6 +14,7 @@ impl StudioQuery {
         let db = ctx.data::<DatabaseConnection>()?;
 
         let studio: Option<studio::Model> = studio::Entity::find()
+            .filter(without_trashed::<studio::Entity>())
             .filter(studio::Column::Slug.eq(slug))
             .one(db)
             .await?;

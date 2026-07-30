@@ -1,7 +1,9 @@
 use async_graphql::{Context, Object, Result};
 use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 
-use crate::{entities::content::series, graphql::types::content::series::Series};
+use crate::{
+    entities::content::series, graphql::types::content::series::Series, scopes::without_trashed,
+};
 
 #[derive(Default)]
 pub struct SeriesQuery;
@@ -12,6 +14,7 @@ impl SeriesQuery {
         let db = ctx.data::<DatabaseConnection>()?;
 
         let series = series::Entity::find()
+            .filter(without_trashed::<series::Entity>())
             .filter(series::Column::Slug.eq(slug))
             .one(db)
             .await?;

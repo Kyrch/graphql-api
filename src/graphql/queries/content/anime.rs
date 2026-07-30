@@ -10,7 +10,10 @@ use crate::{
         inputs::pagination_input::PaginationInput, types::content::anime::Anime,
         utils::cursor_paginate,
     },
-    scopes::content::anime::{anime_by_title_like, anime_by_year},
+    scopes::{
+        content::anime::{anime_by_title_like, anime_by_year},
+        without_trashed,
+    },
 };
 
 #[derive(InputObject, Default)]
@@ -28,6 +31,7 @@ impl AnimeQuery {
         let db = ctx.data::<DatabaseConnection>()?;
 
         let anime = anime::Entity::find()
+            .filter(without_trashed::<anime::Entity>())
             .filter(anime::Column::Slug.eq(slug))
             .one(db)
             .await?;
@@ -41,7 +45,7 @@ impl AnimeQuery {
         pagination: Option<PaginationInput>,
         filter: Option<AnimeFilterInput>,
     ) -> Result<Connection<u64, Anime, EmptyFields, EmptyFields>> {
-        let mut query = anime::Entity::find();
+        let mut query = anime::Entity::find().filter(without_trashed::<anime::Entity>());
 
         let filter = filter.unwrap_or_default();
 

@@ -11,6 +11,10 @@ pub struct Model {
     pub start_at: Option<chrono::DateTime<Utc>>,
     #[sea_orm(column_type = "Timestamp")]
     pub end_at: Option<chrono::DateTime<Utc>>,
+    #[sea_orm(column_type = "Timestamp")]
+    pub created_at: Option<chrono::DateTime<Utc>>,
+    #[sea_orm(column_type = "Timestamp")]
+    pub updated_at: Option<chrono::DateTime<Utc>>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

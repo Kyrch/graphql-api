@@ -1,3 +1,4 @@
+use chrono::Utc;
 use sea_orm::entity::prelude::*;
 
 use crate::enums::list::playlistvisibility::PlaylistVisibility;
@@ -14,6 +15,10 @@ pub struct Model {
     pub name: String,
     pub user_id: Option<u64>,
     pub visibility: PlaylistVisibility,
+    #[sea_orm(column_type = "Timestamp")]
+    pub created_at: Option<chrono::DateTime<Utc>>,
+    #[sea_orm(column_type = "Timestamp")]
+    pub updated_at: Option<chrono::DateTime<Utc>>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

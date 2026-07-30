@@ -1,6 +1,10 @@
+use chrono::Utc;
 use sea_orm::entity::prelude::*;
 
-use crate::entities::content::{animetheme::animetheme, animethemeentry_videos, video};
+use crate::entities::{
+    SoftDeleteEntity,
+    content::{animetheme::animetheme, animethemeentry_videos, video},
+};
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "anime_theme_entries")]
@@ -15,6 +19,18 @@ pub struct Model {
     pub spoiler: bool,
     pub tracks_count: i32,
     pub version: i32,
+    #[sea_orm(column_type = "Timestamp")]
+    pub created_at: Option<chrono::DateTime<Utc>>,
+    #[sea_orm(column_type = "Timestamp")]
+    pub updated_at: Option<chrono::DateTime<Utc>>,
+    #[sea_orm(column_type = "Timestamp")]
+    pub deleted_at: Option<chrono::DateTime<Utc>>,
+}
+
+impl SoftDeleteEntity for Entity {
+    fn deleted_at_column() -> Self::Column {
+        Column::DeletedAt
+    }
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
