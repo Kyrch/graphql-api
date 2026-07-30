@@ -9,7 +9,7 @@ use crate::graphql::{loaders::loaders::RegisterLoaders, query::Query};
 pub type AppSchema = Schema<Query, EmptyMutation, EmptySubscription>;
 
 pub fn create_schema(db: DatabaseConnection) -> AppSchema {
-    Schema::build(Query, EmptyMutation, EmptySubscription)
+    Schema::build(Query::default(), EmptyMutation, EmptySubscription)
         .data(db.clone())
         .register_loaders(db)
         .finish()
