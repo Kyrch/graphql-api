@@ -7,7 +7,7 @@ use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 
 use crate::{
     entities::{
-        admin::featuredtheme,
+        admin::{announcement, featuredtheme},
         auth::user,
         content::{anime, artist, series, studio},
         document::page,
@@ -16,7 +16,7 @@ use crate::{
     graphql::{
         inputs::pagination_input::PaginationInput,
         types::{
-            admin::featuredtheme::FeaturedTheme,
+            admin::{announcement::Announcement, featuredtheme::FeaturedTheme},
             auth::me::Me,
             content::{anime::Anime, artist::Artist, series::Series, studio::Studio},
             document::page::Page,
@@ -119,6 +119,25 @@ impl Query {
             .await?;
 
         Ok(studio.map(|a| a.into()))
+    }
+
+    async fn announcement_connection(
+        &self,
+        ctx: &Context<'_>,
+        pagination: Option<PaginationInput>,
+    ) -> Result<Connection<u64, Announcement, EmptyFields, EmptyFields>> {
+        let query = announcement::Entity::find()
+            .filter(announcement::Column::StartAt.lte(chrono::Utc::now()))
+            .filter(announcement::Column::EndAt.gte(chrono::Utc::now()));
+
+        cursor_paginate(
+            query,
+            ctx,
+            announcement::Column::Id,
+            pagination,
+            |model: &announcement::Model| model.id,
+        )
+        .await
     }
 
     async fn anime_connection(
