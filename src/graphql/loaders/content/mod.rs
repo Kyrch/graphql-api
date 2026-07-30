@@ -4,4 +4,5 @@ pub mod imageable;
 pub mod performance;
 pub mod resourceable;
 pub mod song;
+pub mod studio;
 pub mod video;

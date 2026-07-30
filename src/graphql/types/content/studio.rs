@@ -10,12 +10,15 @@ use crate::{
         loaders::content::{
             imageable::{ImageableKey, ImageableLoader},
             resourceable::{ResourceableKey, ResourceableLoader},
+            studio::studio_anime::StudioAnimeLoader,
         },
         types::content::{
+            anime::Anime,
             externalresource::ExternalResource,
             image::Image,
             imageable::{ImageableConnection, ImageableEdge, ImageableEdgeFields},
             resourceable::{ResourceableConnection, ResourceableEdge, ResourceableEdgeFields},
+            studio_anime::{StudioAnimeConnection, StudioAnimeEdge, StudioAnimeEdgeFields},
         },
     },
 };
@@ -36,6 +39,39 @@ pub struct Studio {
 
 #[ComplexObject]
 impl Studio {
+    async fn anime(
+        &self,
+        ctx: &Context<'_>,
+    ) -> Result<
+        Connection<
+            u64,
+            Anime,
+            EmptyFields,
+            StudioAnimeEdgeFields,
+            StudioAnimeConnection,
+            StudioAnimeEdge,
+        >,
+    > {
+        let loader = ctx.data::<DataLoader<StudioAnimeLoader>>()?;
+
+        let rows = loader.load_one(self.id).await?.unwrap_or_default();
+
+        let mut connection = Connection::with_additional_fields(false, false, EmptyFields);
+
+        for (pivot, anime) in rows {
+            connection.edges.push(Edge::with_additional_fields(
+                anime.id,
+                anime.into(),
+                StudioAnimeEdgeFields {
+                    created_at: pivot.created_at,
+                    updated_at: pivot.updated_at,
+                },
+            ));
+        }
+
+        Ok(connection)
+    }
+
     async fn images(
         &self,
         ctx: &Context<'_>,

@@ -31,6 +31,7 @@ use crate::graphql::loaders::{
         },
         resourceable::ResourceableLoader,
         song::song_performances::SongPerformancesLoader,
+        studio::studio_anime::StudioAnimeLoader,
         video::{video_audio::VideoAudioLoader, video_script::VideoScriptLoader},
     },
     document::page_page::PagePageLoader,
@@ -70,6 +71,7 @@ impl<Query> RegisterLoaders for SchemaBuilder<Query, EmptyMutation, EmptySubscri
             .data(loader(AnimeStudiosLoader { db: db.clone() }))
             .data(loader(ArtistPerformancesLoader { db: db.clone() }))
             .data(loader(SongPerformancesLoader { db: db.clone() }))
+            .data(loader(StudioAnimeLoader { db: db.clone() }))
             .data(loader(PerformanceArtistLoader { db: db.clone() }))
             .data(loader(PerformanceMemberLoader { db: db.clone() }))
             .data(loader(PerformanceSongLoader { db: db.clone() }))

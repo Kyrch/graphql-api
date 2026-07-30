@@ -12,6 +12,7 @@ pub mod resourceable;
 pub mod series;
 pub mod song;
 pub mod studio;
+pub mod studio_anime;
 pub mod synonym;
 pub mod themegroup;
 pub mod video;
