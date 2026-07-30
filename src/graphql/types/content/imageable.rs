@@ -1,4 +1,7 @@
-use async_graphql::{ComplexObject, SimpleObject};
+use async_graphql::{
+    ComplexObject, OutputType, SimpleObject,
+    connection::{ConnectionNameType, EdgeNameType},
+};
 use chrono::{DateTime, Utc};
 
 use crate::graphql::utils::format_datetime;
@@ -26,5 +29,21 @@ impl ImageEdgeFields {
     /// The date that the resource was updated
     async fn updated_at(&self, #[graphql(default = "%+")] format: String) -> Option<String> {
         format_datetime(self.updated_at.as_ref(), &format)
+    }
+}
+
+pub struct ImageableEdge;
+
+impl EdgeNameType for ImageableEdge {
+    fn type_name<T: OutputType>() -> String {
+        "ImageableEdge".to_string()
+    }
+}
+
+pub struct ImageableConnection;
+
+impl ConnectionNameType for ImageableConnection {
+    fn type_name<T: OutputType>() -> String {
+        "ImageableConnection".to_string()
     }
 }

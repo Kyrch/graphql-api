@@ -22,8 +22,8 @@ use crate::{
             animetheme::animetheme::AnimeTheme,
             externalresource::ExternalResource,
             image::Image,
-            imageable::ImageEdgeFields,
-            resourceable::ExternalResourceEdgeFields,
+            imageable::{ImageEdgeFields, ImageableConnection, ImageableEdge},
+            resourceable::{ExternalResourceEdgeFields, ResourceableConnection, ResourceableEdge},
             series::Series,
             studio::Studio,
             synonym::Synonym,
@@ -56,7 +56,6 @@ impl From<&anime::Model> for AnimeTitle {
 pub struct Anime {
     /// The primary key of the resource
     pub id: u64,
-    pub name: String,
     /// The primary title of the anime
     pub title: AnimeTitle,
     /// The format of the anime
@@ -96,7 +95,9 @@ impl Anime {
     async fn images(
         &self,
         ctx: &Context<'_>,
-    ) -> Result<Connection<u64, Image, EmptyFields, ImageEdgeFields>> {
+    ) -> Result<
+        Connection<u64, Image, EmptyFields, ImageEdgeFields, ImageableConnection, ImageableEdge>,
+    > {
         let loader = ctx.data::<DataLoader<ImageableLoader>>()?;
 
         let rows = loader
@@ -127,7 +128,16 @@ impl Anime {
     async fn resources(
         &self,
         ctx: &Context<'_>,
-    ) -> Result<Connection<u64, ExternalResource, EmptyFields, ExternalResourceEdgeFields>> {
+    ) -> Result<
+        Connection<
+            u64,
+            ExternalResource,
+            EmptyFields,
+            ExternalResourceEdgeFields,
+            ResourceableConnection,
+            ResourceableEdge,
+        >,
+    > {
         let loader = ctx.data::<DataLoader<ResourceableLoader>>()?;
 
         let rows = loader
@@ -227,7 +237,6 @@ impl From<anime::Model> for Anime {
         let title = AnimeTitle::from(&model);
         Self {
             id: model.id,
-            name: title.romaji.clone(),
             format: model.format.map(Into::into),
             format_localized: model.format.map(|f| format!("{:?}", f)),
             season: model.season.map(Into::into),

@@ -13,8 +13,11 @@ use crate::{
             resourceable::{ResourceableKey, ResourceableLoader},
         },
         types::content::{
-            externalresource::ExternalResource, image::Image, imageable::ImageEdgeFields,
-            performance::Performance, resourceable::ExternalResourceEdgeFields,
+            externalresource::ExternalResource,
+            image::Image,
+            imageable::{ImageEdgeFields, ImageableConnection, ImageableEdge},
+            performance::Performance,
+            resourceable::{ExternalResourceEdgeFields, ResourceableConnection, ResourceableEdge},
         },
     },
 };
@@ -65,7 +68,9 @@ impl Artist {
     async fn images(
         &self,
         ctx: &Context<'_>,
-    ) -> Result<Connection<u64, Image, EmptyFields, ImageEdgeFields>> {
+    ) -> Result<
+        Connection<u64, Image, EmptyFields, ImageEdgeFields, ImageableConnection, ImageableEdge>,
+    > {
         let loader = ctx.data::<DataLoader<ImageableLoader>>()?;
 
         let rows = loader
@@ -96,7 +101,16 @@ impl Artist {
     async fn resources(
         &self,
         ctx: &Context<'_>,
-    ) -> Result<Connection<u64, ExternalResource, EmptyFields, ExternalResourceEdgeFields>> {
+    ) -> Result<
+        Connection<
+            u64,
+            ExternalResource,
+            EmptyFields,
+            ExternalResourceEdgeFields,
+            ResourceableConnection,
+            ResourceableEdge,
+        >,
+    > {
         let loader = ctx.data::<DataLoader<ResourceableLoader>>()?;
 
         let rows = loader
