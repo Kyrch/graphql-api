@@ -1,6 +1,7 @@
-use animethemes_graphql_rust::entities::content::anime;
-use animethemes_graphql_rust::typesense::documents::anime_document::{
-    AnimeDocument, build_anime_documents,
+use animethemes_graphql_rust::entities::content::studio;
+use animethemes_graphql_rust::scopes::without_trashed;
+use animethemes_graphql_rust::typesense::documents::studio_document::{
+    StudioDocument, build_studio_documents,
 };
 use animethemes_graphql_rust::typesense::index_document::index_document;
 use anyhow::{Context, Result};
@@ -8,6 +9,7 @@ use anyhow::{Context, Result};
 use animethemes_graphql_rust::db::connect;
 use animethemes_graphql_rust::typesense::client::create_typesense_client;
 
+use sea_orm::{EntityTrait, QueryFilter};
 use typesense::prelude::Document;
 
 #[tokio::main]
@@ -17,7 +19,7 @@ async fn main() -> Result<()> {
     let database = connect().await;
     let typesense = create_typesense_client();
 
-    let collection = typesense.collection::<AnimeDocument>();
+    let collection = typesense.collection::<StudioDocument>();
 
     match collection.retrieve().await {
         Ok(_) => {
@@ -31,15 +33,17 @@ async fn main() -> Result<()> {
 
     typesense
         .collections()
-        .create(AnimeDocument::collection_schema())
+        .create(StudioDocument::collection_schema())
         .await
         .context("failed to create Typesense collection")?;
 
-    index_document::<anime::Entity, AnimeDocument, _>(
+    let builder = studio::Entity::find().filter(without_trashed::<studio::Entity>());
+
+    index_document::<studio::Entity, StudioDocument, _>(
         &database,
         &typesense,
-        anime::Entity,
-        build_anime_documents,
+        builder,
+        build_studio_documents,
     )
     .await
     .unwrap();

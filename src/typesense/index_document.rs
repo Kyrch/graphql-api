@@ -2,7 +2,7 @@ use std::{future::Future, pin::Pin};
 
 use anyhow::{Context, Result};
 use sea_orm::{
-    DatabaseConnection, EntityTrait, PaginatorTrait, sea_query::value::prelude::serde_json,
+    DatabaseConnection, EntityTrait, PaginatorTrait, Select, sea_query::value::prelude::serde_json,
 };
 use serde::{Serialize, de::DeserializeOwned};
 use typesense::{
@@ -17,7 +17,7 @@ pub type BuildDocumentsFuture<'a, D> = Pin<Box<dyn Future<Output = Result<Vec<D>
 pub async fn index_document<E, D, F>(
     database: &DatabaseConnection,
     typesense: &TypesenseClient,
-    entity: E,
+    builder: Select<E>,
     mut build_documents: F,
 ) -> Result<()>
 where
@@ -26,7 +26,7 @@ where
     D: Serialize + DeserializeOwned + TypesenseDocument + Send + Sync + 'static,
     F: for<'a> FnMut(Vec<E::Model>, &'a DatabaseConnection) -> BuildDocumentsFuture<'a, D>,
 {
-    let paginator = E::find().order_by_id_asc().paginate(database, 500);
+    let paginator = builder.order_by_id_asc().paginate(database, 500);
 
     let total_pages = paginator
         .num_pages()
@@ -36,10 +36,12 @@ where
     let mut total_indexed = 0_u64;
 
     for page in 0..total_pages {
-        let models = paginator
-            .fetch_page(page)
-            .await
-            .with_context(|| format!("failed to fetch page {page} for {}", entity.table_name()))?;
+        let models = paginator.fetch_page(page).await.with_context(|| {
+            format!(
+                "failed to fetch page {page} for {}",
+                E::table_name(&E::default())
+            )
+        })?;
 
         if models.is_empty() {
             continue;
@@ -48,7 +50,7 @@ where
         let documents = build_documents(models, database).await.with_context(|| {
             format!(
                 "failed to build documents for page {page} of {}",
-                entity.table_name()
+                E::table_name(&E::default())
             )
         })?;
 
@@ -80,7 +82,7 @@ where
             .with_context(|| {
                 format!(
                     "failed to import page {page} of {} into Typesense",
-                    entity.table_name()
+                    E::table_name(&E::default())
                 )
             })?;
 
@@ -88,7 +90,7 @@ where
 
         println!(
             "{total_indexed} indexed documents for entity {}",
-            entity.table_name()
+            E::table_name(&E::default())
         );
     }
 
