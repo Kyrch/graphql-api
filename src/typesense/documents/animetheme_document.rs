@@ -5,7 +5,11 @@ use typesense::Typesense;
 use crate::{
     entities::content::{anime, animetheme::animetheme, song, synonym},
     typesense::{
-        documents::{HasId, anime_document::AnimeDocument, song_document::SongDocument},
+        documents::{
+            HasId,
+            anime_document::{AnimeDocument, build_anime_documents},
+            song_document::SongDocument,
+        },
         index_document::BuildDocumentsFuture,
     },
 };
@@ -33,28 +37,16 @@ impl HasId for AnimeThemeDocument {
     }
 }
 
-impl
-    From<(
-        animetheme::Model,
-        anime::Model,
-        Vec<synonym::Model>,
-        Option<song::Model>,
-    )> for AnimeThemeDocument
-{
-    fn from(
-        (model, anime, synonyms, song): (
-            animetheme::Model,
-            anime::Model,
-            Vec<synonym::Model>,
-            Option<song::Model>,
-        ),
-    ) -> Self {
+type AnimeThemeDocumentFrom = (animetheme::Model, AnimeDocument, Option<song::Model>);
+
+impl From<AnimeThemeDocumentFrom> for AnimeThemeDocument {
+    fn from((model, anime_document, song): AnimeThemeDocumentFrom) -> Self {
         Self {
             id: model.id.to_string(),
             r#type: model.r#type.to_value(),
             sequence: model.sequence,
             type_sequence: format!("{}{}", model.r#type.localize(), model.sequence.unwrap_or(1)),
-            anime: (anime, synonyms).into(),
+            anime: anime_document,
             song: song.map(SongDocument::from),
             created_at: model.created_at.map(|c| c.timestamp()),
         }
@@ -73,22 +65,16 @@ pub fn build_animetheme_documents<'a>(
             .map(|anime| anime.expect("Anime not found for animetheme"))
             .collect();
 
-        let song_models: Vec<Option<song::Model>> = models.load_one(song::Entity, database).await?;
+        let anime_documents = build_anime_documents(anime_models, database).await?;
 
-        let synonyms: Vec<Vec<synonym::Model>> = anime_models
-            .load_many(
-                synonym::Entity::find().filter(synonym::Column::SynonymableType.eq("anime")),
-                database,
-            )
-            .await?;
+        let song_models: Vec<Option<song::Model>> = models.load_one(song::Entity, database).await?;
 
         let documents = models
             .into_iter()
-            .zip(anime_models)
-            .zip(synonyms)
+            .zip(anime_documents)
             .zip(song_models)
-            .map(|(((model, anime), synonyms), song)| {
-                AnimeThemeDocument::from((model, anime, synonyms, song))
+            .map(|((model, anime_document), song)| {
+                AnimeThemeDocument::from((model, anime_document, song))
             })
             .collect();
 
