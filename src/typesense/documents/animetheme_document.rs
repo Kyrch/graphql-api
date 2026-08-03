@@ -4,6 +4,7 @@ use typesense::Typesense;
 
 use crate::{
     entities::content::{anime, animetheme::animetheme, song},
+    enums::LocalizedEnum,
     typesense::{
         documents::{
             HasId,

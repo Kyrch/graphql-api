@@ -1,5 +1,7 @@
 use sea_orm::entity::prelude::*;
 
+use crate::enums::LocalizedEnum;
+
 #[derive(Debug, Copy, Clone, Eq, EnumIter, PartialEq, DeriveActiveEnum)]
 #[sea_orm(rs_type = "i32", db_type = "Integer")]
 pub enum ResourceSite {
@@ -65,4 +67,32 @@ pub enum ResourceSite {
 
     #[sea_orm(num_value = 20)]
     Livechart,
+}
+
+impl LocalizedEnum for ResourceSite {
+    fn localize(&self) -> &str {
+        match self {
+            ResourceSite::OfficialSite => "Official Website",
+            ResourceSite::X => "X",
+            ResourceSite::Anidb => "aniDB",
+            ResourceSite::Anilist => "AniList",
+            ResourceSite::AnimePlanet => "Anime-Planet",
+            ResourceSite::ANN => "Anime News Network",
+            ResourceSite::Kitsu => "Kitsu",
+            ResourceSite::MAL => "MyAnimeList",
+            ResourceSite::Wiki => "Wiki",
+            ResourceSite::Spotify => "Spotify",
+            ResourceSite::YoutubeMusic => "Youtube Music",
+            ResourceSite::Youtube => "Youtube",
+            ResourceSite::AppleMusic => "Apple Music",
+            ResourceSite::AmazonMusic => "Amazon Music",
+            ResourceSite::Crunchyroll => "Crunchyroll",
+            ResourceSite::Hidive => "HIDIVE",
+            ResourceSite::Netflix => "Netflix",
+            ResourceSite::DisneyPlus => "Disney Plus",
+            ResourceSite::Hulu => "Hulu",
+            ResourceSite::AmazonPrimeVideo => "Amazon Prime Video",
+            ResourceSite::Livechart => "Livechart",
+        }
+    }
 }

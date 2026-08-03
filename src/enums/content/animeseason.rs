@@ -1,5 +1,7 @@
 use sea_orm::entity::prelude::*;
 
+use crate::enums::LocalizedEnum;
+
 #[derive(Debug, Copy, Clone, Eq, EnumIter, PartialEq, DeriveActiveEnum)]
 #[sea_orm(rs_type = "i32", db_type = "Integer")]
 pub enum AnimeSeason {
@@ -14,4 +16,15 @@ pub enum AnimeSeason {
 
     #[sea_orm(num_value = 3)]
     Fall,
+}
+
+impl LocalizedEnum for AnimeSeason {
+    fn localize(&self) -> &str {
+        match self {
+            AnimeSeason::Winter => "Winter",
+            AnimeSeason::Spring => "Spring",
+            AnimeSeason::Summer => "Summer",
+            AnimeSeason::Fall => "Fall",
+        }
+    }
 }

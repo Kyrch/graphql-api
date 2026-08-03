@@ -1,3 +1,4 @@
+use animethemes_graphql_rust::enums::LocalizedEnum;
 use async_graphql::{ComplexObject, Context, Result, SimpleObject, dataloader::DataLoader};
 
 use crate::{
@@ -31,6 +32,8 @@ pub struct Video {
     pub nc: bool,
     /// The degree to which the sequence and episode content overlap
     pub overlap: VideoOverlap,
+    /// The formatted string value of the overlap field
+    pub overlap_localized: String,
     /// The path of the file in storage
     pub path: String,
     /// The frame height of the file in storage
@@ -39,6 +42,8 @@ pub struct Video {
     pub size: Option<i32>,
     /// Where did this video come from?
     pub source: Option<VideoSource>,
+    /// The formatted string value of the source field
+    pub source_localized: Option<String>,
     /// Does the video include subtitles of dialogue?
     pub subbed: bool,
     pub tags: String,
@@ -78,10 +83,12 @@ impl From<video::Model> for Video {
             mimetype: model.mimetype,
             nc: model.nc,
             overlap: model.overlap.into(),
+            overlap_localized: model.overlap.localize().to_string(),
             path: model.path,
             resolution: model.resolution,
             size: model.size,
             source: model.source.map(Into::into),
+            source_localized: model.source.map(|s| s.localize().to_string()),
             subbed: model.subbed,
             tags: "".to_string(),
             uncen: model.uncen,

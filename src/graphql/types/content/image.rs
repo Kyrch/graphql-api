@@ -1,3 +1,4 @@
+use animethemes_graphql_rust::enums::LocalizedEnum;
 use async_graphql::SimpleObject;
 
 use crate::{
@@ -14,6 +15,8 @@ pub struct Image {
     pub id: u64,
     /// The component that the resource is intended for
     pub facet: ImageFacet,
+    /// The localized string value of the facet field
+    pub facet_localized: String,
     /// The path of the file in storage
     pub path: String,
     /// The URL to stream the file from storage
@@ -25,6 +28,7 @@ impl From<image::Model> for Image {
         Self {
             id: model.id,
             facet: model.facet.into(),
+            facet_localized: model.facet.localize().to_string(),
             path: model.path,
             link: "".to_string(),
         }

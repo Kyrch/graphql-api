@@ -1,3 +1,4 @@
+use animethemes_graphql_rust::enums::LocalizedEnum;
 use async_graphql::{ComplexObject, Context, Result, SimpleObject, dataloader::DataLoader};
 
 use crate::{
@@ -32,6 +33,8 @@ pub struct Playlist {
     pub description: Option<String>,
     /// The state of who can see the playlist
     pub visibility: PlaylistVisibility,
+    /// The localized string value of the visibility field
+    pub visibility_localized: String,
 }
 
 #[ComplexObject]
@@ -93,6 +96,7 @@ impl From<playlist::Model> for Playlist {
             name: model.name,
             description: model.description,
             visibility: model.visibility.into(),
+            visibility_localized: model.visibility.localize().to_string(),
         }
     }
 }

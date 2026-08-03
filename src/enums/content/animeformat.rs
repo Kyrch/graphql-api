@@ -1,5 +1,7 @@
 use sea_orm::entity::prelude::*;
 
+use crate::enums::LocalizedEnum;
+
 #[derive(Debug, Copy, Clone, Eq, EnumIter, PartialEq, DeriveActiveEnum)]
 #[sea_orm(rs_type = "i32", db_type = "Integer")]
 pub enum AnimeFormat {
@@ -20,4 +22,17 @@ pub enum AnimeFormat {
 
     #[sea_orm(num_value = 5)]
     ONA,
+}
+
+impl LocalizedEnum for AnimeFormat {
+    fn localize(&self) -> &str {
+        match self {
+            AnimeFormat::TV => "TV",
+            AnimeFormat::TVShort => "TV Short",
+            AnimeFormat::OVA => "OVA",
+            AnimeFormat::Movie => "Movie",
+            AnimeFormat::Special => "Special",
+            AnimeFormat::ONA => "ONA",
+        }
+    }
 }

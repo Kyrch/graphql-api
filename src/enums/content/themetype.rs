@@ -1,5 +1,7 @@
 use sea_orm::entity::prelude::*;
 
+use crate::enums::LocalizedEnum;
+
 #[derive(Debug, Copy, Clone, Eq, EnumIter, PartialEq, DeriveActiveEnum)]
 #[sea_orm(rs_type = "i32", db_type = "Integer")]
 pub enum ThemeType {
@@ -13,12 +15,12 @@ pub enum ThemeType {
     IN,
 }
 
-impl ThemeType {
-    pub fn localize(&self) -> String {
+impl LocalizedEnum for ThemeType {
+    fn localize(&self) -> &str {
         match self {
-            ThemeType::OP => "OP".to_string(),
-            ThemeType::ED => "ED".to_string(),
-            ThemeType::IN => "IN".to_string(),
+            ThemeType::OP => "OP",
+            ThemeType::ED => "ED",
+            ThemeType::IN => "IN",
         }
     }
 }

@@ -1,3 +1,4 @@
+use animethemes_graphql_rust::enums::LocalizedEnum;
 use async_graphql::{ComplexObject, Context, Result, SimpleObject, dataloader::DataLoader};
 
 use crate::{
@@ -38,6 +39,8 @@ pub struct AnimeTheme {
     pub slug: String,
     /// The type of the sequence
     pub r#type: ThemeType,
+    /// The localized string value of the type field
+    pub type_localized: String,
 }
 
 #[ComplexObject]
@@ -92,6 +95,7 @@ impl From<animetheme::Model> for AnimeTheme {
             song_id: model.song_id,
             slug: model.slug,
             r#type: model.r#type.into(),
+            type_localized: model.r#type.localize().to_string(),
         }
     }
 }

@@ -1,3 +1,4 @@
+use animethemes_graphql_rust::enums::LocalizedEnum;
 use async_graphql::{
     ComplexObject, Context, Result, SimpleObject,
     connection::{Connection, Edge, EmptyFields},
@@ -60,11 +61,11 @@ pub struct Anime {
     pub title: AnimeTitle,
     /// The format of the anime
     pub format: Option<AnimeFormat>,
-    /// The localized format of the anime
+    /// The localized string value of the format field
     pub format_localized: Option<String>,
     /// The premiere season of the anime
     pub season: Option<AnimeSeason>,
-    /// The localized season of the anime
+    /// The localized string value of the season field
     pub season_localized: Option<String>,
     /// The URL slug & route key of the resource
     pub slug: String,
@@ -245,9 +246,9 @@ impl From<anime::Model> for Anime {
         Self {
             id: model.id,
             format: model.format.map(Into::into),
-            format_localized: model.format.map(|f| format!("{:?}", f)),
+            format_localized: model.format.map(|f| f.localize().to_string()),
             season: model.season.map(Into::into),
-            season_localized: model.season.map(|s| format!("{:?}", s)),
+            season_localized: model.season.map(|s| s.localize().to_string()),
             slug: model.slug,
             synopsis: model.synopsis,
             title,

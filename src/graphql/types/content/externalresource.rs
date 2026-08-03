@@ -1,3 +1,4 @@
+use animethemes_graphql_rust::enums::LocalizedEnum;
 use async_graphql::SimpleObject;
 
 use crate::{
@@ -18,7 +19,7 @@ pub struct ExternalResource {
     pub link: String,
     /// The external site that the resource belongs to
     pub site: ResourceSite,
-    /// The localized external site that the resource belongs to
+    /// The localized string value of the site field
     pub site_localized: String,
 }
 
@@ -29,7 +30,7 @@ impl From<externalresource::Model> for ExternalResource {
             external_id: model.external_id,
             link: model.link,
             site: model.site.into(),
-            site_localized: format!("{:?}", model.site),
+            site_localized: model.site.localize().to_string(),
         }
     }
 }
