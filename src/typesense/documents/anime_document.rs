@@ -34,8 +34,10 @@ impl HasId for AnimeDocument {
     }
 }
 
-impl From<(anime::Model, Vec<synonym::Model>)> for AnimeDocument {
-    fn from((model, synonyms): (anime::Model, Vec<synonym::Model>)) -> Self {
+type AnimeDocumentFrom = (anime::Model, Vec<synonym::Model>);
+
+impl From<AnimeDocumentFrom> for AnimeDocument {
+    fn from((model, synonyms): AnimeDocumentFrom) -> Self {
         Self {
             id: model.id.to_string(),
             title: model.title.clone(),

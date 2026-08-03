@@ -21,8 +21,7 @@ pub const QUERY_BY_WEIGHTS: &str = "10,8,8,6";
 pub struct SeriesDocument {
     pub id: String,
     pub title: String,
-    #[typesense(flatten)]
-    pub anime: AnimeDocument,
+    pub anime: Vec<AnimeDocument>,
     pub created_at: Option<i64>,
 }
 
@@ -32,14 +31,14 @@ impl HasId for SeriesDocument {
     }
 }
 
-type SeriesDocumentFrom = (series::Model, AnimeDocument);
+type SeriesDocumentFrom = (series::Model, Vec<AnimeDocument>);
 
 impl From<SeriesDocumentFrom> for SeriesDocument {
-    fn from((model, anime_document): SeriesDocumentFrom) -> Self {
+    fn from((model, anime_documents): SeriesDocumentFrom) -> Self {
         Self {
             id: model.id.to_string(),
             title: model.title,
-            anime: anime_document,
+            anime: anime_documents,
             created_at: model.created_at.map(|c| c.timestamp()),
         }
     }
@@ -50,19 +49,19 @@ pub fn build_series_documents<'a>(
     database: &'a DatabaseConnection,
 ) -> BuildDocumentsFuture<'a, SeriesDocument> {
     Box::pin(async move {
-        let anime_models: Vec<anime::Model> = models
-            .load_many(anime::Entity, database)
-            .await?
-            .into_iter()
-            .flatten()
-            .collect();
+        let anime_models: Vec<Vec<anime::Model>> =
+            models.load_many(anime::Entity, database).await?;
 
-        let anime_documents = build_anime_documents(anime_models, database).await?;
+        let mut anime_documents: Vec<Vec<AnimeDocument>> = Vec::with_capacity(anime_models.len());
+
+        for anime_group in anime_models {
+            anime_documents.push(build_anime_documents(anime_group, database).await?);
+        }
 
         let documents = models
             .into_iter()
             .zip(anime_documents)
-            .map(|(model, anime_document)| SeriesDocument::from((model, anime_document)))
+            .map(|(model, anime_documents)| SeriesDocument::from((model, anime_documents)))
             .collect();
 
         Ok(documents)
