@@ -12,3 +12,13 @@ pub enum ThemeType {
     #[sea_orm(num_value = 2)]
     IN,
 }
+
+impl ThemeType {
+    pub fn localize(&self) -> String {
+        match self {
+            ThemeType::OP => "OP".to_string(),
+            ThemeType::ED => "ED".to_string(),
+            ThemeType::IN => "IN".to_string(),
+        }
+    }
+}

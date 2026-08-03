@@ -1,7 +1,12 @@
 use animethemes_graphql_rust::{
-    entities::content::studio,
+    entities::content::{animetheme::animetheme, song, studio},
     typesense::{
-        documents::{anime_document::AnimeDocument, studio_document::StudioDocument},
+        documents::{
+            anime_document::{self, AnimeDocument},
+            animetheme_document::{self, AnimeThemeDocument},
+            song_document::{self, SongDocument},
+            studio_document::{self, StudioDocument},
+        },
         search::search as search_function,
     },
 };
@@ -102,8 +107,40 @@ impl RootQuery {
                 anime::Entity::find(),
                 anime::Column::Id,
                 search.clone(),
-                "title,title_english,title_native,synonyms",
-                "8,6,6,5",
+                anime_document::QUERY_BY,
+                anime_document::QUERY_BY_WEIGHTS,
+            )
+            .await?
+            .into_iter()
+            .map(|m| m.into())
+            .collect();
+        }
+
+        if ctx.look_ahead().field("animethemes").exists() {
+            search_struct.animethemes = search_function::<animetheme::Entity, AnimeThemeDocument>(
+                db,
+                typesense,
+                animetheme::Entity::find(),
+                animetheme::Column::Id,
+                search.clone(),
+                animetheme_document::QUERY_BY,
+                animetheme_document::QUERY_BY_WEIGHTS,
+            )
+            .await?
+            .into_iter()
+            .map(|m| m.into())
+            .collect();
+        }
+
+        if ctx.look_ahead().field("songs").exists() {
+            search_struct.songs = search_function::<song::Entity, SongDocument>(
+                db,
+                typesense,
+                song::Entity::find(),
+                song::Column::Id,
+                search.clone(),
+                song_document::QUERY_BY,
+                song_document::QUERY_BY_WEIGHTS,
             )
             .await?
             .into_iter()
@@ -118,8 +155,8 @@ impl RootQuery {
                 studio::Entity::find(),
                 studio::Column::Id,
                 search.clone(),
-                "name",
-                "10",
+                studio_document::QUERY_BY,
+                studio_document::QUERY_BY_WEIGHTS,
             )
             .await?
             .into_iter()

@@ -7,6 +7,9 @@ use crate::{
     typesense::{documents::HasId, index_document::BuildDocumentsFuture},
 };
 
+pub const QUERY_BY: &str = "name";
+pub const QUERY_BY_WEIGHTS: &str = "10";
+
 #[derive(Debug, Clone, Serialize, Deserialize, Typesense)]
 #[typesense(collection_name = "studios")]
 pub struct StudioDocument {

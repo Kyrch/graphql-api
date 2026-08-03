@@ -7,6 +7,9 @@ use crate::{
     typesense::{documents::HasId, index_document::BuildDocumentsFuture},
 };
 
+pub const QUERY_BY: &str = "title,title_english,title_native,synonyms";
+pub const QUERY_BY_WEIGHTS: &str = "8,6,6,5";
+
 #[derive(Debug, Clone, Serialize, Deserialize, Typesense)]
 #[typesense(collection_name = "anime")]
 pub struct AnimeDocument {
