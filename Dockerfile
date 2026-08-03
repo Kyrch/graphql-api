@@ -8,7 +8,14 @@ RUN apt-get update && \
 
 COPY . .
 
-RUN cargo build --release
+RUN cargo build --release --bins && \
+    mkdir -p /out && \
+    find /app/target/release \
+        -maxdepth 1 \
+        -type f \
+        -executable \
+        -exec cp {} /out/ \;
+
 
 FROM debian:bookworm-slim
 
@@ -18,8 +25,8 @@ RUN apt-get update && \
     apt-get install -y ca-certificates libssl3 && \
     rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /app/target/release/animethemes-graphql-rust /app/animethemes-graphql-rust
+COPY --from=builder /out/ /usr/local/bin/
 
 EXPOSE 8000
 
-CMD ["./animethemes-graphql-rust"]
+CMD ["/usr/local/bin/animethemes-graphql-rust"]

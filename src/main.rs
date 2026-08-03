@@ -1,9 +1,8 @@
-mod db;
-mod entities;
-mod enums;
 mod graphql;
 mod schema;
 mod scopes;
+
+use animethemes_graphql_rust::{db, entities, enums, typesense};
 
 use axum::{Router, routing::get};
 

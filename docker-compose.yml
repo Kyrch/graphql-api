@@ -9,7 +9,7 @@ services:
             - .env
         depends_on:
             - mysql
-
+            - typesense
     mysql:
         image: mysql:8.4
         container_name: animethemes-graphql-mysql
@@ -33,6 +33,26 @@ services:
                 - '-p${DB_PASSWORD}'
             retries: 3
             timeout: 5s
+    typesense:
+        image: 'typesense/typesense:30.2'
+        container_name: animethemes-graphql-typesense
+        ports:
+            - '${FORWARD_TYPESENSE_PORT:-8108}:8108'
+        environment:
+            TYPESENSE_DATA_DIR: '${TYPESENSE_DATA_DIR:-/data}'
+            TYPESENSE_API_KEY: '${TYPESENSE_API_KEY:-xyz}'
+            TYPESENSE_ENABLE_CORS: '${TYPESENSE_ENABLE_CORS:-true}'
+        volumes:
+            - 'typesense-data:/data'
+        healthcheck:
+            test:
+                - CMD
+                - bash
+                - '-c'
+                - 'exec 3<>/dev/tcp/localhost/8108 && printf ''GET /health HTTP/1.1\r\nConnection: close\r\n\r\n'' >&3 && head -n1 <&3 | grep ''200'' && exec 3>&-'
+            retries: 5
+            timeout: 7s
 
 volumes:
     mysql_data:
+    typesense-data:
