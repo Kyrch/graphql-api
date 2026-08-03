@@ -1,9 +1,9 @@
-use sea_orm::{ActiveEnum, ColumnTrait, DatabaseConnection, EntityTrait, LoaderTrait, QueryFilter};
+use sea_orm::{ActiveEnum, DatabaseConnection, LoaderTrait};
 use serde::{Deserialize, Serialize};
 use typesense::Typesense;
 
 use crate::{
-    entities::content::{anime, animetheme::animetheme, song, synonym},
+    entities::content::{anime, animetheme::animetheme, song},
     typesense::{
         documents::{
             HasId,
