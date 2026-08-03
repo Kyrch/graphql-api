@@ -1,8 +1,13 @@
+use animethemes_graphql_rust::{
+    entities::content::studio,
+    typesense::{
+        documents::{anime_document::AnimeDocument, studio_document::StudioDocument},
+        search::search as search_function,
+    },
+};
 use async_graphql::{Context, MergedObject, Object, Result, SimpleObject};
 
-use axum::Error;
-use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
-use typesense::models::SearchParameters;
+use sea_orm::{DatabaseConnection, EntityTrait};
 
 use crate::{
     entities::{auth::user, content::anime},
@@ -24,7 +29,7 @@ use crate::{
             list::playlist::Playlist,
         },
     },
-    typesense::{client::TypesenseClient, documents::anime_document::AnimeDocument},
+    typesense::client::TypesenseClient,
 };
 
 #[derive(MergedObject, Default)]
@@ -75,6 +80,10 @@ impl RootQuery {
     }
 
     async fn search(&self, ctx: &Context<'_>, search: String) -> Result<Search> {
+        let db = ctx.data::<DatabaseConnection>()?;
+
+        let typesense = ctx.data::<TypesenseClient>()?;
+
         let mut search_struct = Search {
             anime: Vec::new(),
             artists: Vec::new(),
@@ -87,43 +96,37 @@ impl RootQuery {
         };
 
         if ctx.look_ahead().field("anime").exists() {
-            search_struct.anime = self.search_anime(ctx, search.clone()).await?;
+            search_struct.anime = search_function::<anime::Entity, AnimeDocument>(
+                db,
+                typesense,
+                anime::Entity::find(),
+                anime::Column::Id,
+                search.clone(),
+                "title,title_english,title_native,synonyms",
+                "8,6,6,5",
+            )
+            .await?
+            .into_iter()
+            .map(|m| m.into())
+            .collect();
+        }
+
+        if ctx.look_ahead().field("studios").exists() {
+            search_struct.studios = search_function::<studio::Entity, StudioDocument>(
+                db,
+                typesense,
+                studio::Entity::find(),
+                studio::Column::Id,
+                search.clone(),
+                "name",
+                "10",
+            )
+            .await?
+            .into_iter()
+            .map(|m| m.into())
+            .collect();
         }
 
         Ok(search_struct)
-    }
-
-    async fn search_anime(&self, ctx: &Context<'_>, search: String) -> Result<Vec<Anime>> {
-        let db = ctx.data::<DatabaseConnection>()?;
-
-        let typesense = ctx.data::<TypesenseClient>()?;
-
-        let anime_document = typesense
-            .collection::<AnimeDocument>()
-            .documents()
-            .search(
-                SearchParameters::builder()
-                    .q(search)
-                    .query_by("title,title_english,title_native,synonyms")
-                    .query_by_weights("8,6,6,5")
-                    .build(),
-            )
-            .await
-            .map_err(|error| Error::new(error.to_string()))?;
-
-        let ids: Vec<String> = anime_document
-            .hits
-            .unwrap_or_default()
-            .into_iter()
-            .filter_map(|hit| hit.document)
-            .filter_map(|document| document.id.parse::<String>().ok())
-            .collect();
-
-        let animes = anime::Entity::find()
-            .filter(anime::Column::Id.is_in(ids))
-            .all(db)
-            .await?;
-
-        Ok(animes.into_iter().map(|a| a.into()).collect())
     }
 }

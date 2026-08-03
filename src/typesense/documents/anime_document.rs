@@ -4,7 +4,7 @@ use typesense::Typesense;
 
 use crate::{
     entities::content::{anime, synonym},
-    typesense::index_document::BuildDocumentsFuture,
+    typesense::{documents::HasId, index_document::BuildDocumentsFuture},
 };
 
 #[derive(Debug, Clone, Serialize, Deserialize, Typesense)]
@@ -23,6 +23,12 @@ pub struct AnimeDocument {
     pub year: Option<i32>,
     pub created_at: Option<i64>,
     pub synonyms: Vec<String>,
+}
+
+impl HasId for AnimeDocument {
+    fn id(&self) -> &str {
+        &self.id
+    }
 }
 
 impl From<(anime::Model, Vec<synonym::Model>)> for AnimeDocument {

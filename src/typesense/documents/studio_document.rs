@@ -2,7 +2,10 @@ use sea_orm::DatabaseConnection;
 use serde::{Deserialize, Serialize};
 use typesense::Typesense;
 
-use crate::{entities::content::studio, typesense::index_document::BuildDocumentsFuture};
+use crate::{
+    entities::content::studio,
+    typesense::{documents::HasId, index_document::BuildDocumentsFuture},
+};
 
 #[derive(Debug, Clone, Serialize, Deserialize, Typesense)]
 #[typesense(collection_name = "studios")]
@@ -11,6 +14,12 @@ pub struct StudioDocument {
     #[typesense(sort)]
     pub name: String,
     pub created_at: Option<i64>,
+}
+
+impl HasId for StudioDocument {
+    fn id(&self) -> &str {
+        &self.id
+    }
 }
 
 impl From<studio::Model> for StudioDocument {
