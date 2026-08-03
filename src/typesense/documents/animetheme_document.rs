@@ -24,9 +24,7 @@ pub struct AnimeThemeDocument {
     pub r#type: i32,
     pub sequence: Option<i32>,
     pub type_sequence: String,
-    #[typesense(flatten)]
     pub anime: AnimeDocument,
-    #[typesense(flatten)]
     pub song: Option<SongDocument>,
     pub created_at: Option<i64>,
 }

@@ -22,7 +22,6 @@ pub struct AnimeThemeEntryDocument {
     pub id: String,
     pub version: String,
     pub type_sequence_version: String,
-    #[typesense(flatten)]
     pub animetheme: AnimeThemeDocument,
     pub created_at: Option<i64>,
 }
