@@ -9,7 +9,10 @@ use crate::{
             videoscript,
         },
     },
-    enums::content::{videooverlap::VideoOverlap, videosource::VideoSource},
+    enums::{
+        LocalizedEnum,
+        content::{videooverlap::VideoOverlap, videosource::VideoSource},
+    },
 };
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
@@ -36,6 +39,36 @@ pub struct Model {
     pub updated_at: Option<chrono::DateTime<Utc>>,
     #[sea_orm(column_type = "Timestamp")]
     pub deleted_at: Option<chrono::DateTime<Utc>>,
+}
+
+impl Model {
+    pub fn tags(&self) -> String {
+        let mut tags: Vec<String> = Vec::new();
+
+        if self.nc {
+            tags.push("NC".to_string());
+        }
+
+        if let Some(source) = self.source {
+            if matches!(source, VideoSource::BD | VideoSource::DVD) {
+                tags.push(source.localize().to_string());
+            }
+        }
+
+        if let Some(resolution) = self.resolution {
+            if resolution != 720 {
+                tags.push(resolution.to_string());
+            }
+        }
+
+        if self.subbed {
+            tags.push("Subbed".to_string());
+        } else if self.lyrics {
+            tags.push("Lyrics".to_string());
+        }
+
+        tags.join("")
+    }
 }
 
 impl SoftDeleteEntity for Entity {

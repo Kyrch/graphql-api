@@ -1,6 +1,6 @@
 use animethemes_graphql_rust::{
     entities::{
-        content::{animetheme::animetheme, series, song, studio},
+        content::{animetheme::animetheme, series, song, studio, video},
         list::playlist,
     },
     typesense::{
@@ -11,6 +11,7 @@ use animethemes_graphql_rust::{
             series_document::{self, SeriesDocument},
             song_document::{self, SongDocument},
             studio_document::{self, StudioDocument},
+            video_document::{self, VideoDocument},
         },
         search::search as search_function,
     },
@@ -194,6 +195,22 @@ impl RootQuery {
                 search.clone(),
                 studio_document::QUERY_BY,
                 studio_document::QUERY_BY_WEIGHTS,
+            )
+            .await?
+            .into_iter()
+            .map(|m| m.into())
+            .collect();
+        }
+
+        if ctx.look_ahead().field("videos").exists() {
+            search_struct.videos = search_function::<video::Entity, VideoDocument>(
+                db,
+                typesense,
+                video::Entity::find(),
+                video::Column::Id,
+                search.clone(),
+                video_document::QUERY_BY,
+                video_document::QUERY_BY_WEIGHTS,
             )
             .await?
             .into_iter()
