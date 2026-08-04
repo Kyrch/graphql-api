@@ -1,7 +1,10 @@
 use chrono::Utc;
 use sea_orm::entity::prelude::*;
 
-use crate::entities::{SoftDeleteEntity, content::anime};
+use crate::entities::{
+    SoftDeleteEntity,
+    content::{anime, artist},
+};
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "synonyms")]
@@ -34,11 +37,24 @@ pub enum Relation {
         to = "anime::Column::Id"
     )]
     Anime,
+
+    #[sea_orm(
+        belongs_to = "artist::Entity",
+        from = "Column::SynonymableId",
+        to = "artist::Column::Id"
+    )]
+    Artist,
 }
 
 impl Related<anime::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Anime.def()
+    }
+}
+
+impl Related<artist::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Artist.def()
     }
 }
 

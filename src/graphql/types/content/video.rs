@@ -46,6 +46,7 @@ pub struct Video {
     pub source_localized: Option<String>,
     /// Does the video include subtitles of dialogue?
     pub subbed: bool,
+    /// The attributes used to distinguish the file within the context of a theme
     pub tags: String,
     /// Is the video an uncensored version of a censored sequence?
     pub uncen: bool,
@@ -77,20 +78,20 @@ impl From<video::Model> for Video {
         Self {
             id: model.id,
             audio_id: model.audio_id,
-            basename: model.basename,
-            filename: model.filename,
+            basename: model.basename.clone(),
+            filename: model.filename.clone(),
             lyrics: model.lyrics,
-            mimetype: model.mimetype,
+            mimetype: model.mimetype.clone(),
             nc: model.nc,
             overlap: model.overlap.into(),
             overlap_localized: model.overlap.localize().to_string(),
-            path: model.path,
+            path: model.path.clone(),
             resolution: model.resolution,
             size: model.size,
             source: model.source.map(Into::into),
             source_localized: model.source.map(|s| s.localize().to_string()),
             subbed: model.subbed,
-            tags: "".to_string(),
+            tags: model.tags(),
             uncen: model.uncen,
         }
     }
