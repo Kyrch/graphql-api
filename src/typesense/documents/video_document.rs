@@ -13,7 +13,7 @@ use crate::{
     },
 };
 
-pub const QUERY_BY: &str = "filename,tags,entries.animetheme.song.title,entries.animetheme.song.title_native,entries.animetheme.anime.title,entries.animetheme.anime.title_english,entries.animetheme.anime.title_native,entries.animetheme.anime.synonymsm,entries.type_sequence_version";
+pub const QUERY_BY: &str = "filename,tags,entries.animetheme.song.title,entries.animetheme.song.title_native,entries.animetheme.anime.title,entries.animetheme.anime.title_english,entries.animetheme.anime.title_native,entries.animetheme.anime.synonyms,entries.type_sequence_version";
 pub const QUERY_BY_WEIGHTS: &str = "10,8,6,7,5,5,5,4,4";
 
 #[derive(Debug, Clone, Serialize, Deserialize, Typesense)]
