@@ -4,6 +4,7 @@ pub mod anime_studios;
 pub mod animetheme;
 pub mod animethemeentry_videos;
 pub mod artist;
+pub mod artist_members;
 pub mod audio;
 pub mod externalresource;
 pub mod image;

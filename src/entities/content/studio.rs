@@ -1,11 +1,9 @@
 use chrono::Utc;
 use sea_orm::entity::prelude::*;
 
-use crate::entities::{
-    SoftDeleteEntity,
-    content::{anime, anime_studios},
-};
+use crate::entities::{SoftDeleteEntity, content::anime};
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "studios")]
 pub struct Model {
@@ -19,27 +17,14 @@ pub struct Model {
     pub updated_at: Option<chrono::DateTime<Utc>>,
     #[sea_orm(column_type = "Timestamp")]
     pub deleted_at: Option<chrono::DateTime<Utc>>,
+
+    #[sea_orm(has_many, via = "anime_studios")]
+    pub anime: HasMany<anime::Entity>,
 }
 
 impl SoftDeleteEntity for Entity {
     fn deleted_at_column() -> Self::Column {
         Column::DeletedAt
-    }
-}
-
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {
-    #[sea_orm(has_many = "anime_studios::Entity")]
-    AnimeStudio,
-}
-
-impl Related<anime::Entity> for Entity {
-    fn to() -> RelationDef {
-        anime_studios::Relation::Anime.def()
-    }
-
-    fn via() -> Option<RelationDef> {
-        Some(anime_studios::Relation::Studio.def().rev())
     }
 }
 

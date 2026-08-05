@@ -40,11 +40,11 @@ pub struct Playlist {
 #[ComplexObject]
 impl Playlist {
     async fn tracks_count(&self, _ctx: &Context<'_>) -> Result<i32> {
-        Ok(1)
+        todo!()
     }
 
     async fn tracks_exists(&self, _ctx: &Context<'_>) -> Result<bool> {
-        Ok(true)
+        todo!()
     }
 
     async fn user(&self, ctx: &Context<'_>) -> Result<Option<User>> {

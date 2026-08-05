@@ -1,6 +1,9 @@
 use chrono::Utc;
 use sea_orm::entity::prelude::*;
 
+use crate::entities::list::playlist;
+
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "users")]
 pub struct Model {
@@ -13,9 +16,9 @@ pub struct Model {
     pub created_at: Option<chrono::DateTime<Utc>>,
     #[sea_orm(column_type = "Timestamp")]
     pub updated_at: Option<chrono::DateTime<Utc>>,
-}
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
+    #[sea_orm(has_many)]
+    pub playlists: HasMany<playlist::Entity>,
+}
 
 impl ActiveModelBehavior for ActiveModel {}

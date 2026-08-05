@@ -3,6 +3,9 @@ use sea_orm::{
     sqlx::types::chrono::{self, Utc},
 };
 
+use crate::entities::content::{anime, series};
+
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "anime_series")]
 pub struct Model {
@@ -14,35 +17,12 @@ pub struct Model {
     pub created_at: Option<chrono::DateTime<Utc>>,
     #[sea_orm(column_type = "Timestamp")]
     pub updated_at: Option<chrono::DateTime<Utc>>,
+
+    #[sea_orm(belongs_to, from = "anime_id", to = "id")]
+    pub anime: BelongsTo<anime::Entity>,
+
+    #[sea_orm(belongs_to, from = "series_id", to = "id")]
+    pub series: BelongsTo<series::Entity>,
 }
 
 impl ActiveModelBehavior for ActiveModel {}
-
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {
-    #[sea_orm(
-        belongs_to = "super::anime::Entity",
-        from = "Column::AnimeId",
-        to = "super::anime::Column::Id"
-    )]
-    Anime,
-
-    #[sea_orm(
-        belongs_to = "super::series::Entity",
-        from = "Column::SeriesId",
-        to = "super::series::Column::Id"
-    )]
-    Series,
-}
-
-impl Related<super::anime::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Anime.def()
-    }
-}
-
-impl Related<super::series::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Series.def()
-    }
-}

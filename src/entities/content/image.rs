@@ -3,6 +3,7 @@ use sea_orm::entity::prelude::*;
 
 use crate::{entities::SoftDeleteEntity, enums::content::imagefacet::ImageFacet};
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "images")]
 pub struct Model {
@@ -23,8 +24,5 @@ impl SoftDeleteEntity for Entity {
         Column::DeletedAt
     }
 }
-
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}

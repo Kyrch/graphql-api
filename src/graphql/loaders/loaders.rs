@@ -23,7 +23,10 @@ use crate::graphql::loaders::{
                 },
             },
         },
-        artist::artist_performances::ArtistPerformancesLoader,
+        artist::{
+            artist_groups::ArtistGroupsLoader, artist_members::ArtistMembersLoader,
+            artist_performances::ArtistPerformancesLoader,
+        },
         imageable::ImageableLoader,
         performance::{
             performance_artist::PerformanceArtistLoader,
@@ -69,6 +72,8 @@ impl<Query> RegisterLoaders for SchemaBuilder<Query, EmptyMutation, EmptySubscri
             .data(loader(AnimeThemeEntryVideosLoader { db: db.clone() }))
             .data(loader(AnimeSeriesLoader { db: db.clone() }))
             .data(loader(AnimeStudiosLoader { db: db.clone() }))
+            .data(loader(ArtistGroupsLoader { db: db.clone() }))
+            .data(loader(ArtistMembersLoader { db: db.clone() }))
             .data(loader(ArtistPerformancesLoader { db: db.clone() }))
             .data(loader(SongPerformancesLoader { db: db.clone() }))
             .data(loader(StudioAnimeLoader { db: db.clone() }))

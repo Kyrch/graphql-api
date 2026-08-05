@@ -8,11 +8,15 @@ use crate::{
     entities::content::artist,
     graphql::{
         loaders::content::{
-            artist::artist_performances::ArtistPerformancesLoader,
+            artist::{
+                artist_groups::ArtistGroupsLoader, artist_members::ArtistMembersLoader,
+                artist_performances::ArtistPerformancesLoader,
+            },
             imageable::{ImageableKey, ImageableLoader},
             resourceable::{ResourceableKey, ResourceableLoader},
         },
         types::content::{
+            artist_member::{ArtistMemberConnection, ArtistMemberEdge, ArtistMemberEdgeFields},
             externalresource::ExternalResource,
             image::Image,
             imageable::{ImageableConnection, ImageableEdge, ImageableEdgeFields},
@@ -57,6 +61,80 @@ pub struct Artist {
 
 #[ComplexObject]
 impl Artist {
+    async fn members(
+        &self,
+        ctx: &Context<'_>,
+    ) -> Result<
+        Connection<
+            u64,
+            Artist,
+            EmptyFields,
+            ArtistMemberEdgeFields,
+            ArtistMemberConnection,
+            ArtistMemberEdge,
+        >,
+    > {
+        let loader = ctx.data::<DataLoader<ArtistMembersLoader>>()?;
+
+        let rows = loader.load_one(self.id).await?.unwrap_or_default();
+
+        let mut connection = Connection::with_additional_fields(false, false, EmptyFields);
+
+        for (pivot, member) in rows {
+            connection.edges.push(Edge::with_additional_fields(
+                member.id,
+                member.into(),
+                ArtistMemberEdgeFields {
+                    alias: pivot.alias,
+                    r#as: pivot.r#as,
+                    notes: pivot.notes,
+                    relevance: pivot.relevance,
+                    created_at: pivot.created_at,
+                    updated_at: pivot.updated_at,
+                },
+            ));
+        }
+
+        Ok(connection)
+    }
+
+    async fn groups(
+        &self,
+        ctx: &Context<'_>,
+    ) -> Result<
+        Connection<
+            u64,
+            Artist,
+            EmptyFields,
+            ArtistMemberEdgeFields,
+            ArtistMemberConnection,
+            ArtistMemberEdge,
+        >,
+    > {
+        let loader = ctx.data::<DataLoader<ArtistGroupsLoader>>()?;
+
+        let rows = loader.load_one(self.id).await?.unwrap_or_default();
+
+        let mut connection = Connection::with_additional_fields(false, false, EmptyFields);
+
+        for (pivot, group) in rows {
+            connection.edges.push(Edge::with_additional_fields(
+                group.id,
+                group.into(),
+                ArtistMemberEdgeFields {
+                    alias: pivot.alias,
+                    r#as: pivot.r#as,
+                    notes: pivot.notes,
+                    relevance: pivot.relevance,
+                    created_at: pivot.created_at,
+                    updated_at: pivot.updated_at,
+                },
+            ));
+        }
+
+        Ok(connection)
+    }
+
     async fn performances(&self, ctx: &Context<'_>) -> Result<Vec<Performance>> {
         let loader = ctx.data::<DataLoader<ArtistPerformancesLoader>>()?;
 

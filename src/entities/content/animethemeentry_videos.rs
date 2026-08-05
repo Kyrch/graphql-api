@@ -5,6 +5,7 @@ use sea_orm::{
 
 use crate::entities::content::{animetheme::animethemeentry::animethemeentry, video};
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "anime_theme_entry_video")]
 pub struct Model {
@@ -16,35 +17,12 @@ pub struct Model {
     pub created_at: Option<chrono::DateTime<Utc>>,
     #[sea_orm(column_type = "Timestamp")]
     pub updated_at: Option<chrono::DateTime<Utc>>,
+
+    #[sea_orm(belongs_to, from = "entry_id", to = "id")]
+    pub animethemeentry: BelongsTo<animethemeentry::Entity>,
+
+    #[sea_orm(belongs_to, from = "video_id", to = "id")]
+    pub video: BelongsTo<video::Entity>,
 }
 
 impl ActiveModelBehavior for ActiveModel {}
-
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {
-    #[sea_orm(
-        belongs_to = "animethemeentry::Entity",
-        from = "Column::EntryId",
-        to = "animethemeentry::Column::Id"
-    )]
-    AnimeThemeEntry,
-
-    #[sea_orm(
-        belongs_to = "video::Entity",
-        from = "Column::VideoId",
-        to = "video::Column::Id"
-    )]
-    Video,
-}
-
-impl Related<animethemeentry::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::AnimeThemeEntry.def()
-    }
-}
-
-impl Related<video::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Video.def()
-    }
-}

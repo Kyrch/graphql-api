@@ -1,11 +1,12 @@
 use chrono::Utc;
-use sea_orm::{LinkDef, entity::prelude::*};
+use sea_orm::entity::prelude::*;
 
 use crate::entities::{
     SoftDeleteEntity,
     content::{performance, synonym},
 };
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "artists")]
 pub struct Model {
@@ -21,6 +22,25 @@ pub struct Model {
     pub updated_at: Option<chrono::DateTime<Utc>>,
     #[sea_orm(column_type = "Timestamp")]
     pub deleted_at: Option<chrono::DateTime<Utc>>,
+
+    #[sea_orm(
+        has_many,
+        // Unsupported
+        //on_condition = r#"synonym::Column::SynonymableType.eq("artist")"#
+    )]
+    pub synonyms: HasMany<synonym::Entity>,
+
+    #[sea_orm(has_many, relation_enum = "Performances", via_rel = "Artist")]
+    pub performances: HasMany<performance::Entity>,
+
+    #[sea_orm(has_many, relation_enum = "MemberPerformances", via_rel = "Member")]
+    pub member_performances: HasMany<performance::Entity>,
+
+    #[sea_orm(self_ref, via = "artist_members", from = "Artist", to = "Member")]
+    pub members: HasMany<Entity>,
+
+    #[sea_orm(self_ref, via = "artist_members", reverse)]
+    pub groups: HasMany<Entity>,
 }
 
 impl SoftDeleteEntity for Entity {
@@ -29,61 +49,26 @@ impl SoftDeleteEntity for Entity {
     }
 }
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {
-    #[sea_orm(
-        has_many = "synonym::Entity",
-        on_condition = r#"synonym::Column::SynonymableType.eq("artist")"#
-    )]
-    Synonyms,
+// pub struct ArtistPerformances;
 
-    #[sea_orm(
-        has_many = "performance::Entity",
-        from = "Column::Id",
-        to = "performance::Column::ArtistId"
-    )]
-    Performances,
+// impl Linked for ArtistPerformances {
+//     type FromEntity = Entity;
+//     type ToEntity = performance::Entity;
 
-    #[sea_orm(
-        has_many = "performance::Entity",
-        from = "Column::Id",
-        to = "performance::Column::MemberId"
-    )]
-    MemberPerformances,
-}
+//     fn link(&self) -> Vec<LinkDef> {
+//         vec![Relation::Performances.def().into()]
+//     }
+// }
 
-impl Related<synonym::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Synonyms.def()
-    }
-}
+// pub struct MemberPerformances;
 
-impl Related<performance::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Performances.def()
-    }
-}
+// impl Linked for MemberPerformances {
+//     type FromEntity = Entity;
+//     type ToEntity = performance::Entity;
 
-pub struct ArtistPerformances;
-
-impl Linked for ArtistPerformances {
-    type FromEntity = Entity;
-    type ToEntity = performance::Entity;
-
-    fn link(&self) -> Vec<LinkDef> {
-        vec![Relation::Performances.def().into()]
-    }
-}
-
-pub struct MemberPerformances;
-
-impl Linked for MemberPerformances {
-    type FromEntity = Entity;
-    type ToEntity = performance::Entity;
-
-    fn link(&self) -> Vec<LinkDef> {
-        vec![Relation::MemberPerformances.def().into()]
-    }
-}
+//     fn link(&self) -> Vec<LinkDef> {
+//         vec![Relation::MemberPerformances.def().into()]
+//     }
+// }
 
 impl ActiveModelBehavior for ActiveModel {}

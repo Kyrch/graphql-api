@@ -6,6 +6,7 @@ use crate::entities::{
     content::{anime, artist},
 };
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "synonyms")]
 pub struct Model {
@@ -21,40 +22,17 @@ pub struct Model {
     pub updated_at: Option<chrono::DateTime<Utc>>,
     #[sea_orm(column_type = "Timestamp")]
     pub deleted_at: Option<chrono::DateTime<Utc>>,
+
+    #[sea_orm(has_many)]
+    pub anime: HasMany<anime::Entity>,
+
+    #[sea_orm(has_many)]
+    pub artists: HasMany<artist::Entity>,
 }
 
 impl SoftDeleteEntity for Entity {
     fn deleted_at_column() -> Self::Column {
         Column::DeletedAt
-    }
-}
-
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {
-    #[sea_orm(
-        belongs_to = "anime::Entity",
-        from = "Column::SynonymableId",
-        to = "anime::Column::Id"
-    )]
-    Anime,
-
-    #[sea_orm(
-        belongs_to = "artist::Entity",
-        from = "Column::SynonymableId",
-        to = "artist::Column::Id"
-    )]
-    Artist,
-}
-
-impl Related<anime::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Anime.def()
-    }
-}
-
-impl Related<artist::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Artist.def()
     }
 }
 

@@ -9,6 +9,7 @@ use crate::{
     enums::content::themetype::ThemeType,
 };
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "anime_themes")]
 pub struct Model {
@@ -26,62 +27,23 @@ pub struct Model {
     pub updated_at: Option<chrono::DateTime<Utc>>,
     #[sea_orm(column_type = "Timestamp")]
     pub deleted_at: Option<chrono::DateTime<Utc>>,
+
+    #[sea_orm(belongs_to, from = "anime_id", to = "id")]
+    pub anime: BelongsTo<anime::Entity>,
+
+    #[sea_orm(belongs_to, from = "song_id", to = "id")]
+    pub song: BelongsTo<Option<song::Entity>>,
+
+    #[sea_orm(belongs_to, from = "group_id", to = "id")]
+    pub theme_group: BelongsTo<Option<themegroup::Entity>>,
+
+    #[sea_orm(has_many)]
+    pub animethemeentries: HasMany<animethemeentry::Entity>,
 }
 
 impl SoftDeleteEntity for Entity {
     fn deleted_at_column() -> Self::Column {
         Column::DeletedAt
-    }
-}
-
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {
-    #[sea_orm(
-        belongs_to = "anime::Entity",
-        from = "Column::AnimeId",
-        to = "anime::Column::Id"
-    )]
-    Anime,
-
-    #[sea_orm(has_many = "animethemeentry::Entity")]
-    AnimeThemeEntries,
-
-    #[sea_orm(
-        belongs_to = "song::Entity",
-        from = "Column::SongId",
-        to = "song::Column::Id"
-    )]
-    Song,
-
-    #[sea_orm(
-        belongs_to = "themegroup::Entity",
-        from = "Column::GroupId",
-        to = "themegroup::Column::Id"
-    )]
-    ThemeGroup,
-}
-
-impl Related<anime::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Anime.def()
-    }
-}
-
-impl Related<animethemeentry::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::AnimeThemeEntries.def()
-    }
-}
-
-impl Related<song::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Song.def()
-    }
-}
-
-impl Related<themegroup::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::ThemeGroup.def()
     }
 }
 

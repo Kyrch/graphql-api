@@ -3,6 +3,7 @@ use sea_orm::entity::prelude::*;
 
 use crate::entities::{SoftDeleteEntity, content::video};
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "video_scripts")]
 pub struct Model {
@@ -16,27 +17,14 @@ pub struct Model {
     pub updated_at: Option<chrono::DateTime<Utc>>,
     #[sea_orm(column_type = "Timestamp")]
     pub deleted_at: Option<chrono::DateTime<Utc>>,
+
+    #[sea_orm(belongs_to, from = "video_id", to = "id")]
+    pub video: BelongsTo<video::Entity>,
 }
 
 impl SoftDeleteEntity for Entity {
     fn deleted_at_column() -> Self::Column {
         Column::DeletedAt
-    }
-}
-
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {
-    #[sea_orm(
-        belongs_to = "video::Entity",
-        from = "Column::VideoId",
-        to = "video::Column::Id"
-    )]
-    Video,
-}
-
-impl Related<video::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Video.def()
     }
 }
 

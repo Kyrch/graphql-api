@@ -4,10 +4,7 @@ use sea_orm::entity::prelude::*;
 use crate::{
     entities::{
         SoftDeleteEntity,
-        content::{
-            animetheme::animethemeentry::animethemeentry, animethemeentry_videos, audio,
-            videoscript,
-        },
+        content::{animetheme::animethemeentry::animethemeentry, audio, videoscript},
     },
     enums::{
         LocalizedEnum,
@@ -15,6 +12,7 @@ use crate::{
     },
 };
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "videos")]
 pub struct Model {
@@ -39,6 +37,15 @@ pub struct Model {
     pub updated_at: Option<chrono::DateTime<Utc>>,
     #[sea_orm(column_type = "Timestamp")]
     pub deleted_at: Option<chrono::DateTime<Utc>>,
+
+    #[sea_orm(belongs_to, from = "audio_id", to = "id")]
+    pub audio: BelongsTo<Option<audio::Entity>>,
+
+    #[sea_orm(has_one)]
+    pub video_script: HasOne<videoscript::Entity>,
+
+    #[sea_orm(has_many, via = "animethemeentry_videos")]
+    pub animethemeentries: HasMany<animethemeentry::Entity>,
 }
 
 impl Model {
@@ -74,48 +81,6 @@ impl Model {
 impl SoftDeleteEntity for Entity {
     fn deleted_at_column() -> Self::Column {
         Column::DeletedAt
-    }
-}
-
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {
-    #[sea_orm(
-        belongs_to = "audio::Entity",
-        from = "Column::AudioId",
-        to = "audio::Column::Id"
-    )]
-    Audio,
-
-    #[sea_orm(
-        belongs_to = "videoscript::Entity",
-        from = "Column::Id",
-        to = "videoscript::Column::VideoId"
-    )]
-    VideoScript,
-
-    #[sea_orm(has_many = "animethemeentry_videos::Entity")]
-    AnimeThemeEntryVideos,
-}
-
-impl Related<audio::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Audio.def()
-    }
-}
-
-impl Related<videoscript::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::VideoScript.def()
-    }
-}
-
-impl Related<animethemeentry::Entity> for Entity {
-    fn to() -> RelationDef {
-        animethemeentry_videos::Relation::AnimeThemeEntry.def()
-    }
-
-    fn via() -> Option<RelationDef> {
-        Some(animethemeentry_videos::Relation::Video.def().rev())
     }
 }
 

@@ -3,6 +3,7 @@ use sea_orm::entity::prelude::*;
 
 use crate::entities::{SoftDeleteEntity, content::animetheme::animetheme};
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "groups")]
 pub struct Model {
@@ -16,23 +17,14 @@ pub struct Model {
     pub updated_at: Option<chrono::DateTime<Utc>>,
     #[sea_orm(column_type = "Timestamp")]
     pub deleted_at: Option<chrono::DateTime<Utc>>,
+
+    #[sea_orm(has_many)]
+    pub animethemes: HasMany<animetheme::Entity>,
 }
 
 impl SoftDeleteEntity for Entity {
     fn deleted_at_column() -> Self::Column {
         Column::DeletedAt
-    }
-}
-
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {
-    #[sea_orm(has_many = "animetheme::Entity")]
-    AnimeThemes,
-}
-
-impl Related<animetheme::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::AnimeThemes.def()
     }
 }
 

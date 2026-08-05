@@ -4,11 +4,12 @@ use sea_orm::entity::prelude::*;
 use crate::{
     entities::{
         SoftDeleteEntity,
-        content::{anime_series, anime_studios, animetheme::animetheme, series, studio, synonym},
+        content::{animetheme::animetheme, series, studio, synonym},
     },
     enums::content::{animeformat::AnimeFormat, animeseason::AnimeSeason},
 };
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "anime")]
 pub struct Model {
@@ -28,61 +29,27 @@ pub struct Model {
     pub updated_at: Option<chrono::DateTime<Utc>>,
     #[sea_orm(column_type = "Timestamp")]
     pub deleted_at: Option<chrono::DateTime<Utc>>,
+
+    #[sea_orm(
+        has_many,
+        // Unsupported
+        //on_condition = r#"synonym::Column::SynonymableType.eq("anime")"#
+    )]
+    pub synonyms: HasMany<synonym::Entity>,
+
+    #[sea_orm(has_many)]
+    pub animethemes: HasMany<animetheme::Entity>,
+
+    #[sea_orm(has_many, via = "anime_series")]
+    pub series: HasMany<series::Entity>,
+
+    #[sea_orm(has_many, via = "anime_studios")]
+    pub studios: HasMany<studio::Entity>,
 }
 
 impl SoftDeleteEntity for Entity {
     fn deleted_at_column() -> Self::Column {
         Column::DeletedAt
-    }
-}
-
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {
-    #[sea_orm(
-        has_many = "synonym::Entity",
-        on_condition = r#"synonym::Column::SynonymableType.eq("anime")"#
-    )]
-    Synonyms,
-
-    #[sea_orm(has_many = "animetheme::Entity")]
-    AnimeThemes,
-
-    #[sea_orm(has_many = "anime_series::Entity")]
-    AnimeSeries,
-
-    #[sea_orm(has_many = "anime_studios::Entity")]
-    AnimeStudio,
-}
-
-impl Related<synonym::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Synonyms.def()
-    }
-}
-
-impl Related<animetheme::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::AnimeThemes.def()
-    }
-}
-
-impl Related<series::Entity> for Entity {
-    fn to() -> RelationDef {
-        anime_series::Relation::Series.def()
-    }
-
-    fn via() -> Option<RelationDef> {
-        Some(anime_series::Relation::Anime.def().rev())
-    }
-}
-
-impl Related<studio::Entity> for Entity {
-    fn to() -> RelationDef {
-        anime_studios::Relation::Studio.def()
-    }
-
-    fn via() -> Option<RelationDef> {
-        Some(anime_studios::Relation::Anime.def().rev())
     }
 }
 

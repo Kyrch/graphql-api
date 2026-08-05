@@ -3,6 +3,7 @@ use sea_orm::entity::prelude::*;
 
 use crate::entities::content::externalresource;
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "resourceables")]
 pub struct Model {
@@ -16,22 +17,9 @@ pub struct Model {
     pub created_at: Option<chrono::DateTime<Utc>>,
     #[sea_orm(column_type = "Timestamp")]
     pub updated_at: Option<chrono::DateTime<Utc>>,
-}
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {
-    #[sea_orm(
-        belongs_to = "externalresource::Entity",
-        from = "Column::ResourceId",
-        to = "externalresource::Column::Id"
-    )]
-    Resource,
-}
-
-impl Related<externalresource::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Resource.def()
-    }
+    #[sea_orm(belongs_to, from = "resource_id", to = "id")]
+    pub resource: BelongsTo<externalresource::Entity>,
 }
 
 impl ActiveModelBehavior for ActiveModel {}

@@ -3,9 +3,10 @@ use sea_orm::entity::prelude::*;
 
 use crate::entities::{
     SoftDeleteEntity,
-    content::{animetheme::animetheme, animethemeentry_videos, video},
+    content::{animetheme::animetheme, video},
 };
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "anime_theme_entries")]
 pub struct Model {
@@ -25,44 +26,17 @@ pub struct Model {
     pub updated_at: Option<chrono::DateTime<Utc>>,
     #[sea_orm(column_type = "Timestamp")]
     pub deleted_at: Option<chrono::DateTime<Utc>>,
+
+    #[sea_orm(belongs_to, from = "theme_id", to = "id")]
+    pub theme: BelongsTo<animetheme::Entity>,
+
+    #[sea_orm(has_many, via = "animethemeentry_videos")]
+    pub videos: HasMany<video::Entity>,
 }
 
 impl SoftDeleteEntity for Entity {
     fn deleted_at_column() -> Self::Column {
         Column::DeletedAt
-    }
-}
-
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {
-    #[sea_orm(
-        belongs_to = "animetheme::Entity",
-        from = "Column::ThemeId",
-        to = "animetheme::Column::Id"
-    )]
-    AnimeTheme,
-
-    #[sea_orm(has_many = "animethemeentry_videos::Entity")]
-    AnimeThemeEntryVideos,
-}
-
-impl Related<animetheme::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::AnimeTheme.def()
-    }
-}
-
-impl Related<video::Entity> for Entity {
-    fn to() -> RelationDef {
-        animethemeentry_videos::Relation::Video.def()
-    }
-
-    fn via() -> Option<RelationDef> {
-        Some(
-            animethemeentry_videos::Relation::AnimeThemeEntry
-                .def()
-                .rev(),
-        )
     }
 }
 

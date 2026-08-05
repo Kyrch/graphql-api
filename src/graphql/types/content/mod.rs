@@ -3,6 +3,7 @@ pub mod anime_series;
 pub mod anime_studios;
 pub mod animetheme;
 pub mod artist;
+pub mod artist_member;
 pub mod audio;
 pub mod externalresource;
 pub mod image;

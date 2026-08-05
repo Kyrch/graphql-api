@@ -6,6 +6,7 @@ use crate::entities::{
     content::{artist, song},
 };
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "performances")]
 pub struct Model {
@@ -25,47 +26,20 @@ pub struct Model {
     pub updated_at: Option<chrono::DateTime<Utc>>,
     #[sea_orm(column_type = "Timestamp")]
     pub deleted_at: Option<chrono::DateTime<Utc>>,
+
+    #[sea_orm(belongs_to, relation_enum = "Artist", from = "artist_id", to = "id")]
+    pub artist: BelongsTo<artist::Entity>,
+
+    #[sea_orm(belongs_to, relation_enum = "Member", from = "member_id", to = "id")]
+    pub member: BelongsTo<Option<artist::Entity>>,
+
+    #[sea_orm(belongs_to, from = "song_id", to = "id")]
+    pub song: BelongsTo<song::Entity>,
 }
 
 impl SoftDeleteEntity for Entity {
     fn deleted_at_column() -> Self::Column {
         Column::DeletedAt
-    }
-}
-
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {
-    #[sea_orm(
-        belongs_to = "artist::Entity",
-        from = "Column::ArtistId",
-        to = "artist::Column::Id"
-    )]
-    Artist,
-
-    #[sea_orm(
-        belongs_to = "artist::Entity",
-        from = "Column::MemberId",
-        to = "artist::Column::Id"
-    )]
-    Member,
-
-    #[sea_orm(
-        belongs_to = "song::Entity",
-        from = "Column::SongId",
-        to = "song::Column::Id"
-    )]
-    Song,
-}
-
-impl Related<artist::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Artist.def()
-    }
-}
-
-impl Related<song::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Song.def()
     }
 }
 

@@ -5,6 +5,7 @@ use sea_orm::{
 
 use crate::entities::content::{anime, studio};
 
+#[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "anime_studio")]
 pub struct Model {
@@ -16,35 +17,12 @@ pub struct Model {
     pub created_at: Option<chrono::DateTime<Utc>>,
     #[sea_orm(column_type = "Timestamp")]
     pub updated_at: Option<chrono::DateTime<Utc>>,
+
+    #[sea_orm(belongs_to, from = "anime_id", to = "id")]
+    pub anime: BelongsTo<anime::Entity>,
+
+    #[sea_orm(belongs_to, from = "studio_id", to = "id")]
+    pub studio: BelongsTo<studio::Entity>,
 }
 
 impl ActiveModelBehavior for ActiveModel {}
-
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {
-    #[sea_orm(
-        belongs_to = "anime::Entity",
-        from = "Column::AnimeId",
-        to = "anime::Column::Id"
-    )]
-    Anime,
-
-    #[sea_orm(
-        belongs_to = "studio::Entity",
-        from = "Column::StudioId",
-        to = "studio::Column::Id"
-    )]
-    Studio,
-}
-
-impl Related<anime::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Anime.def()
-    }
-}
-
-impl Related<studio::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Studio.def()
-    }
-}

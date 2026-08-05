@@ -13,7 +13,7 @@ use async_graphql::{Context, MergedObject, Object, ObjectType, Result, SimpleObj
 use sea_orm::{DatabaseConnection, EntityTrait};
 
 use crate::{
-    entities::{auth::user, content::anime},
+    entities::content::anime,
     graphql::{
         queries::{
             admin::{announcement::AnnouncementQuery, featuredtheme::FeaturedThemeQuery},
@@ -75,11 +75,7 @@ struct Search {
 #[Object]
 impl RootQuery {
     async fn me(&self, ctx: &Context<'_>) -> Result<Option<Me>> {
-        let db = ctx.data::<DatabaseConnection>()?;
-
-        let user = user::Entity::find_by_id(1u64).one(db).await?;
-
-        Ok(user.map(|a| a.into()))
+        todo!()
     }
 
     async fn search(&self, ctx: &Context<'_>, search: String) -> Result<Search> {
