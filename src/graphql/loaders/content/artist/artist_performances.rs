@@ -19,7 +19,7 @@ impl Loader<u64> for ArtistPerformancesLoader {
             .all(&self.db)
             .await?;
 
-        let mut result: HashMap<u64, Vec<performance::Model>> = HashMap::new();
+        let mut result: HashMap<u64, Self::Value> = HashMap::new();
 
         for performance in performances {
             result

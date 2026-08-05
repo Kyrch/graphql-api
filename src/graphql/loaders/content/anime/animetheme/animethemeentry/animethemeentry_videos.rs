@@ -19,8 +19,7 @@ impl Loader<u64> for AnimeThemeEntryVideosLoader {
             .all(&self.db)
             .await?;
 
-        let mut result: HashMap<u64, Vec<(animethemeentry_videos::Model, video::Model)>> =
-            HashMap::new();
+        let mut result: HashMap<u64, Self::Value> = HashMap::new();
 
         for (pivot, video) in rows {
             if let Some(video) = video {

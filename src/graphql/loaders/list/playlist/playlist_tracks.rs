@@ -19,7 +19,7 @@ impl Loader<u64> for PlaylistTracksLoader {
             .all(&self.db)
             .await?;
 
-        let mut result: HashMap<u64, Vec<track::Model>> = HashMap::new();
+        let mut result: HashMap<u64, Self::Value> = HashMap::new();
 
         for track in tracks {
             result.entry(track.playlist_id).or_default().push(track);

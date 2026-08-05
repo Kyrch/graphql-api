@@ -20,7 +20,7 @@ impl Loader<u64> for AnimeSynonymsLoader {
             .all(&self.db)
             .await?;
 
-        let mut result: HashMap<u64, Vec<synonym::Model>> = HashMap::new();
+        let mut result: HashMap<u64, Self::Value> = HashMap::new();
 
         for synonym in synonyms {
             result

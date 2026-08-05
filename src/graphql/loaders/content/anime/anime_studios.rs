@@ -19,7 +19,7 @@ impl Loader<u64> for AnimeStudiosLoader {
             .all(&self.db)
             .await?;
 
-        let mut result: HashMap<u64, Vec<(anime_studios::Model, studio::Model)>> = HashMap::new();
+        let mut result: HashMap<u64, Self::Value> = HashMap::new();
 
         for (pivot, studio) in rows {
             if let Some(studio) = studio {

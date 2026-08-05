@@ -33,8 +33,7 @@ impl Loader<ImageableKey> for ImageableLoader {
             .all(&self.db)
             .await?;
 
-        let mut result: HashMap<ImageableKey, Vec<(imageable::Model, image::Model)>> =
-            HashMap::new();
+        let mut result: HashMap<ImageableKey, Self::Value> = HashMap::new();
 
         for (pivot, image) in rows {
             if let Some(image) = image {

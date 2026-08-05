@@ -33,10 +33,7 @@ impl Loader<ResourceableKey> for ResourceableLoader {
             .all(&self.db)
             .await?;
 
-        let mut result: HashMap<
-            ResourceableKey,
-            Vec<(resourceable::Model, externalresource::Model)>,
-        > = HashMap::new();
+        let mut result: HashMap<ResourceableKey, Self::Value> = HashMap::new();
 
         for (pivot, resource) in rows {
             if let Some(resource) = resource {

@@ -19,7 +19,7 @@ impl Loader<u64> for AnimeThemeEntriesLoader {
             .all(&self.db)
             .await?;
 
-        let mut result: HashMap<u64, Vec<animethemeentry::Model>> = HashMap::new();
+        let mut result: HashMap<u64, Self::Value> = HashMap::new();
 
         for entry in entries {
             result.entry(entry.theme_id).or_default().push(entry);
