@@ -28,10 +28,16 @@ impl HasId for SongDocument {
 
 impl From<song::Model> for SongDocument {
     fn from(model: song::Model) -> Self {
+        let title_native = if model.title_native.as_ref() == model.title.as_ref() {
+            None
+        } else {
+            model.title_native.clone()
+        };
+
         Self {
             id: model.id.to_string(),
             title: model.title.clone(),
-            title_native: model.title_native.clone(),
+            title_native: title_native,
             created_at: model.created_at.map(|c| c.timestamp()),
         }
     }

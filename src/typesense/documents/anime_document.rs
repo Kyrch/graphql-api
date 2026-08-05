@@ -38,11 +38,26 @@ type AnimeDocumentFrom = (anime::Model, Vec<synonym::Model>);
 
 impl From<AnimeDocumentFrom> for AnimeDocument {
     fn from((model, synonyms): AnimeDocumentFrom) -> Self {
+        let anime::Model {
+            title,
+            mut title_english,
+            mut title_native,
+            ..
+        } = model;
+
+        if title_english.as_ref() == Some(&title) || title_english == title_native {
+            title_english = None;
+        }
+
+        if title_native.as_ref() == Some(&title) {
+            title_native = None;
+        }
+
         Self {
             id: model.id.to_string(),
-            title: model.title.clone(),
-            title_english: model.title_english.clone(),
-            title_native: model.title_native.clone(),
+            title: title,
+            title_english: title_english,
+            title_native: title_native,
             format: model.format.map(|f| f.to_value()),
             season: model.season.map(|s| s.to_value()),
             year: model.year,

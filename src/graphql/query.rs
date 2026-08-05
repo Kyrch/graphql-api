@@ -74,7 +74,7 @@ struct Search {
 
 #[Object]
 impl RootQuery {
-    async fn me(&self, ctx: &Context<'_>) -> Result<Option<Me>> {
+    async fn me(&self, _ctx: &Context<'_>) -> Result<Option<Me>> {
         todo!()
     }
 

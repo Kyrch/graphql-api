@@ -51,19 +51,25 @@ impl From<ArtistDocumentFrom> for ArtistDocument {
             )
             .collect::<Vec<String>>();
 
+        let name_native = if model.name_native.as_ref() == Some(&model.name) {
+            None
+        } else {
+            model.name_native.clone()
+        };
+
         let mut search_text = vec![
             model.name.clone(),
             synonyms.iter().map(|s| s.text.clone()).collect(),
         ];
 
-        if let Some(name_native) = model.name_native.clone() {
+        if let Some(name_native) = name_native.clone() {
             search_text.push(name_native);
         }
 
         Self {
             id: model.id.to_string(),
             name: model.name.clone(),
-            name_native: model.name_native.clone(),
+            name_native: name_native,
             created_at: model.created_at.map(|c| c.timestamp()),
             r#as: r#as,
             synonyms: synonyms.iter().map(|s| s.text.clone()).collect(),
