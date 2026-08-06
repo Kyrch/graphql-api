@@ -18,8 +18,8 @@ use crate::{
         queries::{
             admin::{announcement::AnnouncementQuery, featuredtheme::FeaturedThemeQuery},
             content::{
-                anime::AnimeQuery, animetheme::AnimeThemeQuery, artist::ArtistQuery,
-                series::SeriesQuery, studio::StudioQuery,
+                anime::AnimeQuery, animetheme::AnimeThemeQuery, animeyear::AnimeYearQuery,
+                artist::ArtistQuery, series::SeriesQuery, studio::StudioQuery,
             },
             document::page::PageQuery,
             list::playlist::PlaylistQuery,
@@ -44,6 +44,7 @@ pub struct Query(
     PageQuery,
     PlaylistQuery,
     AnimeQuery,
+    AnimeYearQuery,
     AnimeThemeQuery,
     ArtistQuery,
     SeriesQuery,

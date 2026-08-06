@@ -6,6 +6,6 @@ pub fn anime_by_title_like(title: String) -> Condition {
     Condition::all().add(anime::Column::Title.like(title))
 }
 
-pub fn anime_by_year(year: i32) -> Condition {
+pub fn anime_by_year(year: i16) -> Condition {
     Condition::all().add(anime::Column::Year.eq(year))
 }

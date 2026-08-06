@@ -1,3 +1,4 @@
+use animethemes_graphql_rust::enums::content::animeseason::AnimeSeason as AnimeSeasonEnum;
 use async_graphql::{
     Context, InputObject, Object, Result,
     connection::{Connection, EmptyFields},
@@ -7,8 +8,8 @@ use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 use crate::{
     entities::content::anime,
     graphql::{
-        inputs::pagination_input::PaginationInput, types::content::anime::Anime,
-        utils::cursor_paginate,
+        enums::content::animeseason::AnimeSeason, inputs::pagination_input::PaginationInput,
+        types::content::anime::Anime, utils::cursor_paginate,
     },
     scopes::{
         content::anime::{anime_by_title_like, anime_by_year},
@@ -17,9 +18,12 @@ use crate::{
 };
 
 #[derive(InputObject, Default)]
-struct AnimeFilterInput {
+pub struct AnimeFilterInput {
     title_like: Option<String>,
-    year: Option<i32>,
+    #[graphql(skip)]
+    pub animeyear_season: Option<AnimeSeason>,
+    #[graphql(skip)]
+    pub animeyear_year: Option<i16>,
 }
 
 #[derive(Default)]
@@ -39,7 +43,7 @@ impl AnimeQuery {
         Ok(anime.map(|a| a.into()))
     }
 
-    async fn anime_connection(
+    pub async fn anime_connection(
         &self,
         ctx: &Context<'_>,
         pagination: Option<PaginationInput>,
@@ -53,8 +57,12 @@ impl AnimeQuery {
             query = query.filter(anime_by_title_like(title_like))
         }
 
-        if let Some(year) = filter.year {
-            query = query.filter(anime_by_year(year))
+        if let Some(animeyear_season) = filter.animeyear_season {
+            query = query.filter(anime::Column::Season.eq(AnimeSeasonEnum::from(animeyear_season)));
+        }
+
+        if let Some(animeyear_year) = filter.animeyear_year {
+            query = query.filter(anime_by_year(animeyear_year))
         }
 
         cursor_paginate(
