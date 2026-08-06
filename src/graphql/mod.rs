@@ -1,6 +1,8 @@
 pub mod enums;
 pub mod inputs;
 pub mod loaders;
+pub mod mutation;
+pub mod mutations;
 pub mod queries;
 pub mod query;
 pub mod types;

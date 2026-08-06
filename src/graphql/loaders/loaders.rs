@@ -1,49 +1,54 @@
-use async_graphql::{EmptyMutation, EmptySubscription, SchemaBuilder, dataloader::DataLoader};
+use async_graphql::{EmptySubscription, SchemaBuilder, dataloader::DataLoader};
 use sea_orm::DatabaseConnection;
 
-use crate::graphql::loaders::{
-    admin::{
-        featuredtheme_entry::FeaturedThemeEntryLoader, featuredtheme_user::FeaturedThemeUserLoader,
-        featuredtheme_video::FeaturedThemeVideoLoader,
-    },
-    content::{
-        anime::{
-            anime_series::AnimeSeriesLoader,
-            anime_studios::AnimeStudiosLoader,
-            anime_synonyms::AnimeSynonymsLoader,
-            anime_theme_entries::AnimeThemeEntriesLoader,
-            anime_themes::AnimeThemesLoader,
-            animetheme::{
-                animetheme_anime::AnimeThemeAnimeLoader,
-                animetheme_group::AnimeThemeGroupLoader,
-                animetheme_song::AnimeThemeSongLoader,
-                animethemeentry::{
-                    animethemeentry_theme::AnimeThemeEntryThemeLoader,
-                    animethemeentry_videos::AnimeThemeEntryVideosLoader,
+use crate::graphql::{
+    loaders::{
+        admin::{
+            featuredtheme_entry::FeaturedThemeEntryLoader,
+            featuredtheme_user::FeaturedThemeUserLoader,
+            featuredtheme_video::FeaturedThemeVideoLoader,
+        },
+        content::{
+            anime::{
+                anime_series::AnimeSeriesLoader,
+                anime_studios::AnimeStudiosLoader,
+                anime_synonyms::AnimeSynonymsLoader,
+                anime_theme_entries::AnimeThemeEntriesLoader,
+                anime_themes::AnimeThemesLoader,
+                animetheme::{
+                    animetheme_anime::AnimeThemeAnimeLoader,
+                    animetheme_group::AnimeThemeGroupLoader,
+                    animetheme_song::AnimeThemeSongLoader,
+                    animethemeentry::{
+                        animethemeentry_theme::AnimeThemeEntryThemeLoader,
+                        animethemeentry_videos::AnimeThemeEntryVideosLoader,
+                    },
                 },
             },
+            artist::{
+                artist_groups::ArtistGroupsLoader, artist_members::ArtistMembersLoader,
+                artist_performances::ArtistPerformancesLoader,
+            },
+            imageable::ImageableLoader,
+            performance::{
+                performance_artist::PerformanceArtistLoader,
+                performance_member::PerformanceMemberLoader,
+                performance_song::PerformanceSongLoader,
+            },
+            resourceable::ResourceableLoader,
+            song::song_performances::SongPerformancesLoader,
+            studio::studio_anime::StudioAnimeLoader,
+            video::{video_audio::VideoAudioLoader, video_script::VideoScriptLoader},
         },
-        artist::{
-            artist_groups::ArtistGroupsLoader, artist_members::ArtistMembersLoader,
-            artist_performances::ArtistPerformancesLoader,
+        document::page_page::PagePageLoader,
+        list::playlist::{
+            playlist_track_first_last::PlaylistTrackFirstLastLoader,
+            playlist_tracks::PlaylistTracksLoader, playlist_user::PlaylistUserLoader,
+            track_entry::TrackEntryLoader, track_track::TrackTrackLoader,
+            track_video::TrackVideoLoader,
         },
-        imageable::ImageableLoader,
-        performance::{
-            performance_artist::PerformanceArtistLoader,
-            performance_member::PerformanceMemberLoader, performance_song::PerformanceSongLoader,
-        },
-        resourceable::ResourceableLoader,
-        song::song_performances::SongPerformancesLoader,
-        studio::studio_anime::StudioAnimeLoader,
-        video::{video_audio::VideoAudioLoader, video_script::VideoScriptLoader},
     },
-    document::page_page::PagePageLoader,
-    list::playlist::{
-        playlist_track_first_last::PlaylistTrackFirstLastLoader,
-        playlist_tracks::PlaylistTracksLoader, playlist_user::PlaylistUserLoader,
-        track_entry::TrackEntryLoader, track_track::TrackTrackLoader,
-        track_video::TrackVideoLoader,
-    },
+    mutation::Mutation,
 };
 
 fn loader<L>(loader: L) -> DataLoader<L>
@@ -57,7 +62,7 @@ pub trait RegisterLoaders {
     fn register_loaders(self, db: DatabaseConnection) -> Self;
 }
 
-impl<Query> RegisterLoaders for SchemaBuilder<Query, EmptyMutation, EmptySubscription> {
+impl<Query> RegisterLoaders for SchemaBuilder<Query, Mutation, EmptySubscription> {
     fn register_loaders(self, db: DatabaseConnection) -> Self {
         self.data(loader(FeaturedThemeEntryLoader { db: db.clone() }))
             .data(loader(FeaturedThemeUserLoader { db: db.clone() }))

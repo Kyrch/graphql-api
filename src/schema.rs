@@ -1,20 +1,20 @@
-use async_graphql::{EmptyMutation, EmptySubscription, Schema, http::GraphiQLSource};
+use async_graphql::{EmptySubscription, Schema, http::GraphiQLSource};
 
 use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
 use axum::{extract::State, response::Html};
 use sea_orm::DatabaseConnection;
 
 use crate::{
-    graphql::{loaders::loaders::RegisterLoaders, query::Query},
+    graphql::{loaders::loaders::RegisterLoaders, mutation::Mutation, query::Query},
     typesense::client::create_typesense_client,
 };
 
-pub type AppSchema = Schema<Query, EmptyMutation, EmptySubscription>;
+pub type AppSchema = Schema<Query, Mutation, EmptySubscription>;
 
 pub fn create_schema(db: DatabaseConnection) -> AppSchema {
     let typesense = create_typesense_client();
 
-    Schema::build(Query::default(), EmptyMutation, EmptySubscription)
+    Schema::build(Query::default(), Mutation::default(), EmptySubscription)
         .data(db.clone())
         .data(typesense)
         .register_loaders(db)

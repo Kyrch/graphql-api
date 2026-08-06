@@ -1,8 +1,7 @@
 use async_graphql::Enum;
 
-use crate::enums::content::animeformat::AnimeFormat as AnimeFormatEnum;
-
 #[derive(Enum, Copy, Clone, Eq, PartialEq)]
+#[graphql(remote = "crate::enums::content::animeformat::AnimeFormat")]
 pub enum AnimeFormat {
     TV,
     TVShort,
@@ -10,17 +9,4 @@ pub enum AnimeFormat {
     Movie,
     Special,
     ONA,
-}
-
-impl From<AnimeFormatEnum> for AnimeFormat {
-    fn from(value: AnimeFormatEnum) -> Self {
-        match value {
-            AnimeFormatEnum::TV => AnimeFormat::TV,
-            AnimeFormatEnum::TVShort => AnimeFormat::TVShort,
-            AnimeFormatEnum::OVA => AnimeFormat::OVA,
-            AnimeFormatEnum::Movie => AnimeFormat::Movie,
-            AnimeFormatEnum::Special => AnimeFormat::Special,
-            AnimeFormatEnum::ONA => AnimeFormat::ONA,
-        }
-    }
 }

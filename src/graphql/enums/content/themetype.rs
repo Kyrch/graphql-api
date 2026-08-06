@@ -1,8 +1,7 @@
 use async_graphql::Enum;
 
-use crate::enums::content::themetype::ThemeType as ThemeTypeEnum;
-
 #[derive(Enum, Copy, Clone, Eq, PartialEq)]
+#[graphql(remote = "crate::enums::content::themetype::ThemeType")]
 pub enum ThemeType {
     /// Opening
     OP,
@@ -10,14 +9,4 @@ pub enum ThemeType {
     ED,
     /// Insert Song
     IN,
-}
-
-impl From<ThemeTypeEnum> for ThemeType {
-    fn from(value: ThemeTypeEnum) -> Self {
-        match value {
-            ThemeTypeEnum::OP => ThemeType::OP,
-            ThemeTypeEnum::ED => ThemeType::ED,
-            ThemeTypeEnum::IN => ThemeType::IN,
-        }
-    }
 }
