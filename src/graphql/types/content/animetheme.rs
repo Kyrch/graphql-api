@@ -2,19 +2,18 @@ use animethemes_graphql_rust::enums::LocalizedEnum;
 use async_graphql::{ComplexObject, Context, Result, SimpleObject, dataloader::DataLoader};
 
 use crate::{
-    entities::content::animetheme::animetheme::{self},
+    entities::content::animetheme,
     graphql::{
         enums::content::themetype::ThemeType,
-        loaders::content::anime::{
-            anime_theme_entries::AnimeThemeEntriesLoader,
+        loaders::content::{
+            anime::anime_theme_entries::AnimeThemeEntriesLoader,
             animetheme::{
                 animetheme_anime::AnimeThemeAnimeLoader, animetheme_group::AnimeThemeGroupLoader,
                 animetheme_song::AnimeThemeSongLoader,
             },
         },
         types::content::{
-            anime::Anime, animetheme::animethemeentry::animethemeentry::AnimeThemeEntry,
-            song::Song, themegroup::ThemeGroup,
+            anime::Anime, animethemeentry::AnimeThemeEntry, song::Song, themegroup::ThemeGroup,
         },
     },
 };

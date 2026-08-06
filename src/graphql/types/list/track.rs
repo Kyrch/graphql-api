@@ -7,9 +7,7 @@ use crate::{
             track_entry::TrackEntryLoader, track_track::TrackTrackLoader,
             track_video::TrackVideoLoader,
         },
-        types::content::{
-            animetheme::animethemeentry::animethemeentry::AnimeThemeEntry, video::Video,
-        },
+        types::content::{animethemeentry::AnimeThemeEntry, video::Video},
     },
 };
 

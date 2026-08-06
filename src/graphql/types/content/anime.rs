@@ -20,7 +20,7 @@ use crate::{
         types::content::{
             anime_series::{AnimeSeriesConnection, AnimeSeriesEdge, AnimeSeriesEdgeFields},
             anime_studios::{AnimeStudioConnection, AnimeStudioEdge, AnimeStudioEdgeFields},
-            animetheme::animetheme::AnimeTheme,
+            animetheme::AnimeTheme,
             externalresource::ExternalResource,
             image::Image,
             imageable::{ImageableConnection, ImageableEdge, ImageableEdgeFields},

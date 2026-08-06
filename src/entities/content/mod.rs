@@ -2,6 +2,7 @@ pub mod anime;
 pub mod anime_series;
 pub mod anime_studios;
 pub mod animetheme;
+pub mod animethemeentry;
 pub mod animethemeentry_videos;
 pub mod artist;
 pub mod artist_members;

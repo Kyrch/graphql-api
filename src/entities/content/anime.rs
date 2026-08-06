@@ -4,7 +4,7 @@ use sea_orm::entity::prelude::*;
 use crate::{
     entities::{
         SoftDeleteEntity,
-        content::{animetheme::animetheme, series, studio, synonym},
+        content::{animetheme, series, studio, synonym},
     },
     enums::content::{animeformat::AnimeFormat, animeseason::AnimeSeason},
 };

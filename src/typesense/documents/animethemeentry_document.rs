@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use typesense::Typesense;
 
 use crate::{
-    entities::content::animetheme::{animetheme, animethemeentry::animethemeentry},
+    entities::content::{animetheme, animethemeentry},
     typesense::{
         documents::{
             HasId,

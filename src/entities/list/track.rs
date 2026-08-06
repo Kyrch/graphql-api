@@ -2,7 +2,7 @@ use chrono::Utc;
 use sea_orm::entity::prelude::*;
 
 use crate::entities::{
-    content::{animetheme::animethemeentry::animethemeentry, video},
+    content::{animethemeentry, video},
     list::playlist,
 };
 

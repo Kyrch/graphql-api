@@ -3,7 +3,7 @@ use sea_orm::{
     sqlx::types::chrono::{self, Utc},
 };
 
-use crate::entities::content::{animetheme::animethemeentry::animethemeentry, video};
+use crate::entities::content::{animethemeentry, video};
 
 #[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]

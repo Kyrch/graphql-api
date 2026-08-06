@@ -4,7 +4,7 @@ use sea_orm::entity::prelude::*;
 use crate::{
     entities::{
         SoftDeleteEntity,
-        content::{anime, animetheme::animethemeentry::animethemeentry, song, themegroup},
+        content::{anime, animethemeentry, song, themegroup},
     },
     enums::content::themetype::ThemeType,
 };

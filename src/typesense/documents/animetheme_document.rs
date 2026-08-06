@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use typesense::Typesense;
 
 use crate::{
-    entities::content::{anime, animetheme::animetheme, song},
+    entities::content::{anime, animetheme, song},
     enums::LocalizedEnum,
     typesense::{
         documents::{

@@ -3,7 +3,7 @@ use sea_orm::entity::prelude::*;
 
 use crate::entities::{
     auth::user,
-    content::{animetheme::animethemeentry::animethemeentry, video},
+    content::{animethemeentry, video},
 };
 
 #[sea_orm::model]

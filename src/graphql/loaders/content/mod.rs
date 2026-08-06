@@ -1,4 +1,6 @@
 pub mod anime;
+pub mod animetheme;
+pub mod animethemeentry;
 pub mod artist;
 pub mod imageable;
 pub mod performance;

@@ -1,4 +1,4 @@
-use animethemes_graphql_rust::entities::content::animetheme::animethemeentry::animethemeentry;
+use animethemes_graphql_rust::entities::content::animethemeentry;
 use animethemes_graphql_rust::scopes::without_trashed;
 use animethemes_graphql_rust::typesense::documents::animethemeentry_document::{
     AnimeThemeEntryDocument, build_animethemeentry_documents,

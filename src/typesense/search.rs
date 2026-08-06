@@ -5,7 +5,7 @@ use typesense::{models::SearchParameters, prelude::Document};
 
 use crate::{
     entities::{
-        content::{anime, animetheme::animetheme, artist, series, song, studio, video},
+        content::{anime, animetheme, artist, series, song, studio, video},
         list::playlist,
     },
     scopes::list::playlist::public_playlists,

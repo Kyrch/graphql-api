@@ -3,7 +3,7 @@ use sea_orm::entity::prelude::*;
 
 use crate::entities::{
     SoftDeleteEntity,
-    content::{animetheme::animetheme, video},
+    content::{animetheme, video},
 };
 
 #[sea_orm::model]

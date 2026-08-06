@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use async_graphql::dataloader::Loader;
 use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 
-use crate::entities::content::animetheme::animetheme;
+use crate::entities::content::animetheme;
 
 pub struct AnimeThemeEntryThemeLoader {
     pub db: DatabaseConnection,

@@ -1,7 +1,7 @@
 use chrono::Utc;
 use sea_orm::entity::prelude::*;
 
-use crate::entities::{SoftDeleteEntity, content::animetheme::animetheme};
+use crate::entities::{SoftDeleteEntity, content::animetheme};
 
 #[sea_orm::model]
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]

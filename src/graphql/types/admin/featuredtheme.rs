@@ -11,9 +11,7 @@ use crate::{
         },
         types::{
             auth::user::User,
-            content::{
-                animetheme::animethemeentry::animethemeentry::AnimeThemeEntry, video::Video,
-            },
+            content::{animethemeentry::AnimeThemeEntry, video::Video},
         },
         utils::format_datetime,
     },

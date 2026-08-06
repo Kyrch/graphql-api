@@ -1,6 +1,6 @@
 use animethemes_graphql_rust::{
     entities::{
-        content::{animetheme::animetheme, artist, series, song, studio, video},
+        content::{animetheme, artist, series, song, studio, video},
         list::playlist,
     },
     typesense::search::{
@@ -26,8 +26,8 @@ use crate::{
         types::{
             auth::me::Me,
             content::{
-                anime::Anime, animetheme::animetheme::AnimeTheme, artist::Artist, series::Series,
-                song::Song, studio::Studio, video::Video,
+                anime::Anime, animetheme::AnimeTheme, artist::Artist, series::Series, song::Song,
+                studio::Studio, video::Video,
             },
             list::playlist::Playlist,
         },

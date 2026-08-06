@@ -4,7 +4,7 @@ use sea_orm::entity::prelude::*;
 use crate::{
     entities::{
         SoftDeleteEntity,
-        content::{animetheme::animethemeentry::animethemeentry, audio, videoscript},
+        content::{animethemeentry, audio, videoscript},
     },
     enums::{
         LocalizedEnum,

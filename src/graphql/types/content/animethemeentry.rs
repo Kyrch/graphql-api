@@ -5,21 +5,21 @@ use async_graphql::{
 };
 
 use crate::{
-    entities::content::animetheme::animethemeentry::animethemeentry,
+    entities::content::animethemeentry,
     graphql::{
-        loaders::content::anime::animetheme::animethemeentry::{
+        loaders::content::animethemeentry::{
             animethemeentry_theme::AnimeThemeEntryThemeLoader,
             animethemeentry_videos::AnimeThemeEntryVideosLoader,
         },
         types::content::{
-            animetheme::{
+            video::Video,
+            {
                 animetheme::AnimeTheme,
-                animethemeentry::animethemeentry_video::{
+                animethemeentry_video::{
                     AnimeThemeEntryVideoConnection, AnimeThemeEntryVideoEdge,
                     AnimeThemeEntryVideoEdgeFields,
                 },
             },
-            video::Video,
         },
     },
 };

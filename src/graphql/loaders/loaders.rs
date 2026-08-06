@@ -10,20 +10,17 @@ use crate::graphql::{
         },
         content::{
             anime::{
-                anime_series::AnimeSeriesLoader,
-                anime_studios::AnimeStudiosLoader,
-                anime_synonyms::AnimeSynonymsLoader,
-                anime_theme_entries::AnimeThemeEntriesLoader,
+                anime_series::AnimeSeriesLoader, anime_studios::AnimeStudiosLoader,
+                anime_synonyms::AnimeSynonymsLoader, anime_theme_entries::AnimeThemeEntriesLoader,
                 anime_themes::AnimeThemesLoader,
-                animetheme::{
-                    animetheme_anime::AnimeThemeAnimeLoader,
-                    animetheme_group::AnimeThemeGroupLoader,
-                    animetheme_song::AnimeThemeSongLoader,
-                    animethemeentry::{
-                        animethemeentry_theme::AnimeThemeEntryThemeLoader,
-                        animethemeentry_videos::AnimeThemeEntryVideosLoader,
-                    },
-                },
+            },
+            animetheme::{
+                animetheme_anime::AnimeThemeAnimeLoader, animetheme_group::AnimeThemeGroupLoader,
+                animetheme_song::AnimeThemeSongLoader,
+            },
+            animethemeentry::{
+                animethemeentry_theme::AnimeThemeEntryThemeLoader,
+                animethemeentry_videos::AnimeThemeEntryVideosLoader,
             },
             artist::{
                 artist_groups::ArtistGroupsLoader, artist_members::ArtistMembersLoader,
