@@ -1,3 +1,5 @@
+use std::env;
+
 use chrono::Utc;
 use sea_orm::entity::prelude::*;
 
@@ -49,6 +51,12 @@ pub struct Model {
 }
 
 impl Model {
+    pub fn link(&self) -> String {
+        let video_url = env::var("VIDEO_URL").expect("VIDEO_URL is required in .env");
+
+        format!("{}/{}", video_url, self.basename)
+    }
+
     pub fn tags(&self) -> String {
         let mut tags: Vec<String> = Vec::new();
 

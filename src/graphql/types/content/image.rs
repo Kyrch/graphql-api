@@ -29,8 +29,8 @@ impl From<image::Model> for Image {
             id: model.id,
             facet: model.facet.into(),
             facet_localized: model.facet.localize().to_string(),
-            path: model.path,
-            link: "".to_string(),
+            path: model.path.clone(),
+            link: model.link(),
         }
     }
 }

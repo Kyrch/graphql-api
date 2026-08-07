@@ -13,6 +13,8 @@ pub struct Audio {
     pub basename: String,
     /// The filename of the file in storage
     pub filename: String,
+    /// The URL to stream the file from storage
+    pub link: String,
     /// The media type of the file in storage
     pub mimetype: String,
     /// The path of the file in storage
@@ -25,8 +27,9 @@ impl From<audio::Model> for Audio {
     fn from(model: audio::Model) -> Self {
         Self {
             id: model.id,
-            basename: model.basename,
-            filename: model.filename,
+            basename: model.basename.clone(),
+            filename: model.filename.clone(),
+            link: model.link(),
             mimetype: model.mimetype,
             path: model.path,
             size: model.size,

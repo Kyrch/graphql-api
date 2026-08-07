@@ -1,3 +1,5 @@
+use std::env;
+
 use chrono::Utc;
 use sea_orm::entity::prelude::*;
 
@@ -17,6 +19,14 @@ pub struct Model {
     pub updated_at: Option<chrono::DateTime<Utc>>,
     #[sea_orm(column_type = "Timestamp")]
     pub deleted_at: Option<chrono::DateTime<Utc>>,
+}
+
+impl Model {
+    pub fn link(&self) -> String {
+        let image_url = env::var("IMAGE_URL").expect("IMAGE_URL is required in .env");
+
+        format!("{}/{}", image_url, self.path)
+    }
 }
 
 impl SoftDeleteEntity for Entity {

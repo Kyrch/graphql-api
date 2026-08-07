@@ -11,13 +11,16 @@ pub struct VideoScript {
     pub id: u64,
     /// The path of the file in storage
     pub path: String,
+    /// The URL to stream the file from storage
+    pub link: String,
 }
 
 impl From<videoscript::Model> for VideoScript {
     fn from(model: videoscript::Model) -> Self {
         Self {
             id: model.id,
-            path: model.path,
+            path: model.path.clone(),
+            link: model.link(),
         }
     }
 }

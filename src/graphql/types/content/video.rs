@@ -24,6 +24,8 @@ pub struct Video {
     pub basename: String,
     /// The filename of the file in storage
     pub filename: String,
+    /// The URL to stream the file from storage
+    pub link: String,
     /// Does the video include subtitles of song lyrics?
     pub lyrics: bool,
     /// The media type of the file in storage
@@ -80,6 +82,7 @@ impl From<video::Model> for Video {
             audio_id: model.audio_id,
             basename: model.basename.clone(),
             filename: model.filename.clone(),
+            link: model.link(),
             lyrics: model.lyrics,
             mimetype: model.mimetype.clone(),
             nc: model.nc,

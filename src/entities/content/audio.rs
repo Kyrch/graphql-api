@@ -1,3 +1,5 @@
+use std::env;
+
 use chrono::Utc;
 use sea_orm::entity::prelude::*;
 
@@ -23,6 +25,14 @@ pub struct Model {
 
     #[sea_orm(has_many, from = "id", to = "audio_id")]
     pub videos: HasMany<video::Entity>,
+}
+
+impl Model {
+    pub fn link(&self) -> String {
+        let audio_url = env::var("AUDIO_URL").expect("AUDIO_URL is required in .env");
+
+        format!("{}/{}", audio_url, self.basename)
+    }
 }
 
 impl SoftDeleteEntity for Entity {
