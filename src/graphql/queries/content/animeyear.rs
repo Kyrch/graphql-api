@@ -1,6 +1,6 @@
 use std::collections::BTreeMap;
 
-use animethemes_graphql_rust::{
+use crate::{
     entities::content::anime,
     enums::{LocalizedEnum, content::animeseason::AnimeSeason as AnimeSeasonEntity},
 };
@@ -17,47 +17,33 @@ use crate::graphql::{
     types::content::anime::Anime,
 };
 
-/// The anime year response type, grouped by season.
+/// The anime year response type, grouped by season
 #[derive(SimpleObject)]
 #[graphql(complex)]
 pub struct AnimeYear {
-    /// The year of the AnimeYear type.
+    /// The year of the AnimeYear type
     year: i16,
-
-    /// Internal value. It is not exposed in GraphQL.
     #[graphql(skip)]
     available_seasons: Vec<AnimeSeason>,
 }
 
 #[ComplexObject]
 impl AnimeYear {
-    /// Object that references the season year queried.
-    async fn season(&self, season: AnimeSeason) -> Option<AnimeYearSeason> {
-        if !self.available_seasons.contains(&season) {
-            return None;
+    /// The available seasons of the year and its anime
+    async fn season(&self, season: Option<AnimeSeason>) -> Vec<AnimeYearSeason> {
+        let mut seasons = self.available_seasons.clone();
+
+        if let Some(season) = season {
+            seasons.retain(|s| *s == season);
         }
 
-        let season_localized = AnimeSeasonEntity::from(season).localize().to_string();
-
-        Some(AnimeYearSeason {
-            season,
-            season_localized,
-            year: self.year,
-        })
-    }
-
-    /// The available seasons of the year.
-    async fn seasons(&self) -> Vec<AnimeYearSeason> {
-        self.available_seasons
+        seasons
             .iter()
-            .cloned()
-            .map(|season| {
-                let season_localized = AnimeSeasonEntity::from(season).localize().to_string();
-                AnimeYearSeason {
-                    season,
-                    season_localized,
-                    year: self.year,
-                }
+            .copied()
+            .map(|season| AnimeYearSeason {
+                season,
+                season_localized: AnimeSeasonEntity::from(season).localize().to_string(),
+                year: self.year,
             })
             .collect()
     }
@@ -69,11 +55,8 @@ impl AnimeYear {
 pub struct AnimeYearSeason {
     /// The season of the anime year.
     season: AnimeSeason,
-
     /// The formatted string value of the season field.
     season_localized: String,
-
-    /// Used internally by the `anime` resolver.
     #[graphql(skip)]
     year: i16,
 }
