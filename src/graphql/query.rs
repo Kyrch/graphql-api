@@ -5,7 +5,7 @@ use crate::graphql::{
         admin::{announcement::AnnouncementQuery, featuredtheme::FeaturedThemeQuery},
         content::{
             anime::AnimeQuery, animetheme::AnimeThemeQuery, animeyear::AnimeYearQuery,
-            artist::ArtistQuery, series::SeriesQuery, studio::StudioQuery,
+            artist::ArtistQuery, image::ImageQuery, series::SeriesQuery, studio::StudioQuery,
         },
         document::page::PageQuery,
         list::playlist::PlaylistQuery,
@@ -26,6 +26,7 @@ pub struct Query(
     AnimeYearQuery,
     AnimeThemeQuery,
     ArtistQuery,
+    ImageQuery,
     SeriesQuery,
     StudioQuery,
 );
