@@ -8,8 +8,13 @@ use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 use crate::{
     entities::content::anime,
     graphql::{
-        enums::content::animeseason::AnimeSeason, inputs::pagination_input::PaginationInput,
-        types::content::anime::Anime, utils::cursor_paginate,
+        enums::{
+            content::animeseason::AnimeSeason,
+            sort::{GraphQLSort, content::anime_sort::AnimeSort},
+        },
+        inputs::pagination_input::PaginationInput,
+        types::content::anime::Anime,
+        utils::cursor_paginate,
     },
     scopes::{
         content::anime::{anime_by_title_like, anime_by_year},
@@ -48,6 +53,7 @@ impl AnimeQuery {
         ctx: &Context<'_>,
         pagination: Option<PaginationInput>,
         filter: Option<AnimeFilterInput>,
+        sort: Option<Vec<AnimeSort>>,
     ) -> Result<Connection<u64, Anime, EmptyFields, EmptyFields>> {
         let mut query = anime::Entity::find().filter(without_trashed::<anime::Entity>());
 
@@ -63,6 +69,12 @@ impl AnimeQuery {
 
         if let Some(animeyear_year) = filter.animeyear_year {
             query = query.filter(anime_by_year(animeyear_year))
+        }
+
+        if let Some(sorts) = sort {
+            for sort in sorts {
+                query = sort.apply_sort(query);
+            }
         }
 
         cursor_paginate(

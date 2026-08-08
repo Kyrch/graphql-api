@@ -7,7 +7,9 @@ use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 use crate::{
     entities::content::series,
     graphql::{
-        inputs::pagination_input::PaginationInput, types::content::series::Series,
+        enums::sort::{GraphQLSort, content::series_sort::SeriesSort},
+        inputs::pagination_input::PaginationInput,
+        types::content::series::Series,
         utils::cursor_paginate,
     },
     scopes::without_trashed,
@@ -40,6 +42,7 @@ impl SeriesQuery {
         ctx: &Context<'_>,
         pagination: Option<PaginationInput>,
         filter: Option<SeriesFilterInput>,
+        sort: Option<Vec<SeriesSort>>,
     ) -> Result<Connection<u64, Series, EmptyFields, EmptyFields>> {
         let mut query = series::Entity::find().filter(without_trashed::<series::Entity>());
 
@@ -47,6 +50,12 @@ impl SeriesQuery {
 
         if let Some(title_romaji_like) = filter.title_romaji_like {
             query = query.filter(series::Column::Title.like(title_romaji_like))
+        }
+
+        if let Some(sorts) = sort {
+            for sort in sorts {
+                query = sort.apply_sort(query);
+            }
         }
 
         cursor_paginate(

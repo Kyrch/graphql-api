@@ -3,6 +3,7 @@ use std::collections::BTreeMap;
 use crate::{
     entities::content::anime,
     enums::{LocalizedEnum, content::animeseason::AnimeSeason as AnimeSeasonEntity},
+    graphql::enums::sort::content::anime_sort::AnimeSort,
 };
 use async_graphql::{
     ComplexObject, Context, Object, Result, SimpleObject,
@@ -68,6 +69,7 @@ impl AnimeYearSeason {
         ctx: &Context<'_>,
         pagination: Option<PaginationInput>,
         filter: Option<AnimeFilterInput>,
+        sort: Option<Vec<AnimeSort>>,
     ) -> Result<Connection<u64, Anime, EmptyFields, EmptyFields>> {
         let mut filter = filter.unwrap_or_default();
 
@@ -75,7 +77,7 @@ impl AnimeYearSeason {
         filter.animeyear_season = Some(self.season.clone().into());
 
         AnimeQuery::default()
-            .anime_connection(ctx, pagination, Some(filter))
+            .anime_connection(ctx, pagination, Some(filter), sort)
             .await
     }
 }

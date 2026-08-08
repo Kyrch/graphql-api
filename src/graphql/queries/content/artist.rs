@@ -7,7 +7,9 @@ use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 use crate::{
     entities::content::artist,
     graphql::{
-        inputs::pagination_input::PaginationInput, types::content::artist::Artist,
+        enums::sort::{GraphQLSort, content::artist_sort::ArtistSort},
+        inputs::pagination_input::PaginationInput,
+        types::content::artist::Artist,
         utils::cursor_paginate,
     },
     scopes::without_trashed,
@@ -40,6 +42,7 @@ impl ArtistQuery {
         ctx: &Context<'_>,
         pagination: Option<PaginationInput>,
         filter: Option<ArtistFilterInput>,
+        sort: Option<Vec<ArtistSort>>,
     ) -> Result<Connection<u64, Artist, EmptyFields, EmptyFields>> {
         let mut query = artist::Entity::find().filter(without_trashed::<artist::Entity>());
 
@@ -47,6 +50,12 @@ impl ArtistQuery {
 
         if let Some(name_main_like) = filter.name_main_like {
             query = query.filter(artist::Column::Name.like(name_main_like))
+        }
+
+        if let Some(sorts) = sort {
+            for sort in sorts {
+                query = sort.apply_sort(query);
+            }
         }
 
         cursor_paginate(
